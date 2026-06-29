@@ -144,7 +144,7 @@
     /* お題登録用プールUI */
     .odai-pool-list { background: #fafafa; border: 1px solid #ddd; border-radius: 6px; max-height: 120px; overflow-y: auto; padding: 8px; margin-bottom: 12px; font-size: 13px; }
     .odai-pool-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid #eee; }
-    .btn-delete-odai { background: #dc3545; width: auto; padding: 2px 6px; font-size: 11px; border-radius: 4px; }
+    .btn-delete-odai { background: #dc3545; width: auto; padding: 2px 6px; font-size: 11px; border-radius: 4px; color: white; border: none; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -152,7 +152,6 @@
   <div class="container">
     <div id="loading-status">接続チェック中...</div>
 
-    <!-- 招待通知 -->
     <div id="invite-notification-zone" class="invite-alert-box hidden">
       <span id="invite-msg-text">〇〇から対戦申し込みが来ました！</span>
       <div class="action-group" style="margin-top: 10px;">
@@ -161,14 +160,12 @@
       </div>
     </div>
 
-    <!-- ログイン -->
     <div id="login-screen" class="game-card hidden" style="text-align: center;">
       <h1>マルチゲームポータル</h1>
       <p>ゲームを始めるにはGoogleアカウントでログインしてください。</p>
       <button id="btn-login">Googleでログイン</button>
     </div>
 
-    <!-- プロフィール登録 -->
     <div id="register-screen" class="game-card hidden" style="text-align: center;">
       <h1>プロフィール登録</h1>
       <p>ユーザーネームを決めてください（ひらがなのみ）</p>
@@ -176,13 +173,11 @@
       <button id="btn-register">登録して次へ</button>
     </div>
 
-    <!-- メインメニュー -->
     <div id="menu-screen" class="hidden">
       <h1>ゲームポータル</h1>
       
       <div class="pc-layout-grid">
         <div class="pc-left-col">
-          <!-- プレイヤー情報 -->
           <div class="game-card">
             <h3>プレイヤー情報</h3>
             <div class="user-info">
@@ -200,7 +195,6 @@
             <button id="btn-to-friend" style="background-color: #9c27b0; padding: 12px;">フレンド・オンラインリスト</button>
           </div>
 
-          <!-- ゲームモード選択タブ -->
           <div class="mode-tabs">
             <button id="tab-shiritori" class="tab-btn active">① しりとり</button>
             <button id="tab-ohekaki" class="tab-btn">② イラスト当て</button>
@@ -208,7 +202,6 @@
             <button id="tab-canvas" class="tab-btn">④ キャンバス</button>
           </div>
 
-          <!-- ① しりとりパネル -->
           <div id="panel-shiritori">
             <div class="game-card">
               <h3>① しりとり：対戦モード</h3>
@@ -224,7 +217,6 @@
             </div>
           </div>
 
-          <!-- ② イラスト当てパネル -->
           <div id="panel-ohekaki" class="hidden">
             <div class="game-card">
               <h3>② イラスト当て：対戦モード</h3>
@@ -240,7 +232,6 @@
             </div>
           </div>
 
-          <!-- ③ 絵しりとりパネル -->
           <div id="panel-eshiritori" class="hidden">
             <div class="game-card">
               <h3>③ 絵しりとり：対戦モード</h3>
@@ -256,7 +247,6 @@
             </div>
           </div>
 
-          <!-- ④ オンラインキャンバスパネル -->
           <div id="panel-canvas" class="hidden">
             <div class="game-card">
               <h3>④ キャンバス：お題事前登録</h3>
@@ -274,10 +264,9 @@
           </div>
         </div>
 
-        <!-- 右カラム：選んだゲーム専用の戦績＆履歴表示 -->
         <div class="pc-right-col">
           <div class="game-card">
-            <h3 id="stats-title">🏆 累計戦績</h3>
+            <h3 id="stats-title">🏆 ① しりとり累計戦績</h3>
             <div class="stats-display" id="total-stats-text">0勝 0敗</div>
           </div>
           <div class="game-card">
@@ -289,7 +278,6 @@
       </div>
     </div>
 
-    <!-- フレンドリスト管理 -->
     <div id="friend-screen" class="hidden">
       <div class="card" style="text-align: center;">
         <h2>👥 フレンド・オンラインリスト</h2>
@@ -304,7 +292,6 @@
       </div>
     </div>
 
-    <!-- ① しりとりゲーム本体画面 -->
     <div id="game-screen" class="game-card hidden" style="max-width: 500px; margin: 0 auto;">
       <h2 id="room-title">部屋ID: ----</h2>
       <div id="game-status" style="font-weight: bold; color: #555; text-align: center; margin-bottom: 20px;">相手の参加を待っています...</div>
@@ -331,7 +318,6 @@
       <button id="btn-leave" style="background-color: #888; margin-top: 30px;">メニューに戻る</button>
     </div>
 
-    <!-- ②③④ グラフィックゲーム共通画面 (イラスト当て/絵しりとり/キャンバス) -->
     <div id="game-screen-paint" class="card hidden">
       <h2 id="room-title-paint">部屋ID: ----</h2>
       <div id="game-status-paint" style="font-weight: bold; color: #555; text-align: center; margin-bottom: 15px;">相手の参加を待っています...</div>
@@ -382,7 +368,6 @@
     </div>
   </div>
 
-  <!-- プロフィールモーダル -->
   <div id="profile-modal" class="modal-overlay hidden">
     <div class="card" style="width: 90%; max-width: 350px; text-align: center;">
       <h2>👤 プロフィール</h2>
@@ -412,10 +397,78 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
+    // --- DOM要素の全取得（バグ回避のためスクリーントップで完全定義） ---
+    const loadingStatus = document.getElementById("loading-status");
+    const loginScreen = document.getElementById("login-screen");
+    const registerScreen = document.getElementById("register-screen");
+    const menuScreen = document.getElementById("menu-screen");
+    const gameScreen = document.getElementById("game-screen");
+    const gameScreenPaint = document.getElementById("game-screen-paint");
+    const friendScreen = document.getElementById("friend-screen");
+    
+    const selectMyStatus = document.getElementById("select-my-status");
+    const userDisplay = document.getElementById("user-display");
+    const friendMyTag = document.getElementById("friend-my-tag");
+    const friendListContainer = document.getElementById("friend-list-container");
+    const friendSearchInput = document.getElementById("friend-search-input");
+    const historyListContainer = document.getElementById("history-list-container");
+    const totalStatsText = document.getElementById("total-stats-text");
+    const btnHistoryMore = document.getElementById("btn-history-more");
+
+    const inviteZone = document.getElementById("invite-notification-zone");
+    const inviteMsgText = document.getElementById("invite-msg-text");
+    const btnAcceptInvite = document.getElementById("btn-accept-invite");
+    const btnDeclineInvite = document.getElementById("btn-decline-invite");
+
+    const profileModal = document.getElementById("profile-modal");
+    const modalUsername = document.getElementById("modal-username");
+    const btnModalAddFriend = document.getElementById("btn-modal-add-friend");
+
+    // ① しりとりUI
+    const roomIdInput = document.getElementById("room-id-input");
+    const roomTitle = document.getElementById("room-title");
+    const gameStatus = document.getElementById("game-status");
+    const shiritoriArea = document.getElementById("shiritori-area");
+    const timerBox = document.getElementById("timer-box");
+    const turnIndicator = document.getElementById("turn-indicator");
+    const currentWord = document.getElementById("current-word");
+    const shiritoriInput = document.getElementById("shiritori-input");
+    const btnSendWord = document.getElementById("btn-send-word");
+    const btnShingi = document.getElementById("btn-shingi");
+    const btnRetire = document.getElementById("btn-retire");
+    const shingiCounter = document.getElementById("shingi-counter");
+    const btnCancelInvite = document.getElementById("btn-cancel-invite");
+    const btnLeave = document.getElementById("btn-leave");
+
+    // ②③④ グラフィック共通UI
+    const roomTitlePaint = document.getElementById("room-title-paint");
+    const gameStatusPaint = document.getElementById("game-status-paint");
+    const playAreaPaint = document.getElementById("play-area-paint");
+    const scoreMyPaint = document.getElementById("score-my-paint");
+    const scoreEnemyPaint = document.getElementById("score-enemy-paint");
+    const timerBoxPaint = document.getElementById("timer-box-paint");
+    const roleIndicatorPaint = document.getElementById("role-indicator-paint");
+    const canvas = document.getElementById("paint-canvas");
+    const drawingMonitor = document.getElementById("drawing-monitor");
+    const btnClearCanvas = document.getElementById("btn-clear-canvas");
+    const drawerPhaseControl = document.getElementById("drawer-phase-control");
+    const btnFinishDrawing = document.getElementById("btn-finish-drawing");
+    const drawerOdaiInputZone = document.getElementById("drawer-odai-input-zone");
+    const odaiInput = document.getElementById("odai-input");
+    const btnSubmitOdai = document.getElementById("btn-submit-odai");
+    const guessDisplayZone = document.getElementById("guess-display-zone");
+    const hintRemainingText = document.getElementById("hint-remaining-text");
+    const charDotsWrapper = document.getElementById("char-dots-wrapper");
+    const guesserInputZone = document.getElementById("guesser-input-zone");
+    const guessInput = document.getElementById("guess-input");
+    const btnSubmitGuess = document.getElementById("btn-submit-guess");
+    const btnCancelInvitePaint = document.getElementById("btn-cancel-invite-paint");
+    const btnLeaveRoomPaint = document.getElementById("btn-leave-paint");
+
     // グローバル状態管理
     let currentUid = null;
     let activeRoomId = null;
-    let activeGameType = "shiritori"; // "shiritori", "ohekaki", "eshiritori", "canvas"
+    let activeGameType = "shiritori"; 
     let historyLimitCount = 5;
     let currentRoomPlayers = [];
     let isFriendMatchMode = false;
@@ -427,8 +480,6 @@
     let remainingTime = 15;
     let isHistorySaved = false;
 
-    // キャンバス描画用状態
-    const canvas = document.getElementById("paint-canvas");
     const ctx = canvas.getContext("2d");
     let isDrawing = false;
     let isCanvasLocked = false;
@@ -440,13 +491,18 @@
       let res = ""; for (let i = 0; i < 4; i++) res += chars.charAt(Math.floor(Math.random() * chars.length)); return res;
     };
     const generateUserTag = () => Math.floor(1000 + Math.random() * 9000).toString();
+    const formatTimestamp = (timestamp) => {
+      if (!timestamp) return "ーー/ーー ーー:ーー";
+      const date = timestamp.toDate();
+      return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+    };
 
     // 各ゲームモードのタブシステム制御
     const gameModes = {
-      shiritori: { tab: document.getElementById("tab-shiritori"), panel: document.getElementById("panel-shiritori"), title: "① しりとり累計戦績" },
-      ohekaki: { tab: document.getElementById("tab-ohekaki"), panel: document.getElementById("panel-ohekaki"), title: "② イラスト当て累計戦績" },
-      eshiritori: { tab: document.getElementById("tab-eshiritori"), panel: document.getElementById("panel-eshiritori"), title: "③ 絵しりとり累計戦績" },
-      canvas: { tab: document.getElementById("tab-canvas"), panel: document.getElementById("panel-canvas"), title: "④ キャンバス累計戦績" }
+      shiritori: { tab: document.getElementById("tab-shiritori"), panel: document.getElementById("panel-shiritori"), title: "🏆 ① しりとり累計戦績" },
+      ohekaki: { tab: document.getElementById("tab-ohekaki"), panel: document.getElementById("panel-ohekaki"), title: "🏆 ② イラスト当て累計戦績" },
+      eshiritori: { tab: document.getElementById("tab-eshiritori"), panel: document.getElementById("panel-eshiritori"), title: "🏆 ③ 絵しりとり累計戦績" },
+      canvas: { tab: document.getElementById("tab-canvas"), panel: document.getElementById("panel-canvas"), title: "🏆 ④ キャンバス累計戦績" }
     };
 
     Object.keys(gameModes).forEach(mode => {
@@ -455,10 +511,11 @@
           gameModes[m].tab.classList.remove("active");
           gameModes[m].panel.classList.add("hidden");
         });
+        gameModes[mode].tab.add("active"); // classListのタイポ修正箇所
         gameModes[mode].tab.classList.add("active");
         gameModes[mode].panel.classList.remove("hidden");
         activeGameType = mode;
-        historyLimitCount = 5; // リセット
+        historyLimitCount = 5; 
         document.getElementById("stats-title").textContent = gameModes[mode].title;
         loadGlobalHistory();
       });
@@ -468,11 +525,11 @@
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         currentUid = user.uid;
-        document.getElementById("loading-status").textContent = "";
+        loadingStatus.textContent = "";
         await checkUserRegistered(user.uid);
       } else {
         currentUid = null;
-        document.getElementById("loading-status").textContent = "";
+        loadingStatus.textContent = "";
         showScreen("login");
       }
     });
@@ -489,8 +546,8 @@
           await setDoc(doc(db, "users", uid), { userTag: generateUserTag(), friends: uData.friends || [], username: uData.username, settingStatus: "auto", lastActive: serverTimestamp() }, { merge: true });
           uData = (await getDoc(doc(db, "users", uid))).data();
         }
-        document.getElementById("user-display").textContent = `名前: ${uData.username}#${uData.userTag}`;
-        document.getElementById("friend-my-tag").textContent = `自分の名前: ${uData.username}#${uData.userTag}`;
+        userDisplay.textContent = `名前: ${uData.username}#${uData.userTag}`;
+        friendMyTag.textContent = `自分の名前: ${uData.username}#${uData.userTag}`;
         if (uData.settingStatus) selectMyStatus.value = uData.settingStatus;
         showScreen("menu");
         startHeartbeat();
@@ -517,6 +574,7 @@
     });
 
     // ステータスとハートビート
+    selectMyStatus.addEventListener("change", () => { startHeartbeat(); });
     function runHeartbeatTick(type) {
       if (!currentUid) return;
       const t = type === "online" ? new Date("2099-12-31") : (type === "offline" ? new Date("2000-01-01") : serverTimestamp());
@@ -540,20 +598,17 @@
       );
       
       unsubscribeHistory = onSnapshot(q, async (snap) => {
-        const container = document.getElementById("history-list-container");
-        const moreBtn = document.getElementById("btn-history-more");
-        
         // 全体の総カウント計算（勝率用）
         const allSnap = await getDocs(query(collection(db, "histories"), where("uids", "array-contains", currentUid), where("gameType", "==", activeGameType)));
         let wins = 0; let losses = 0;
         allSnap.forEach(d => { if (d.data().winnerUid === currentUid) wins++; else losses++; });
-        document.getElementById("total-stats-text").textContent = `${wins}勝 ${losses}敗 (勝率 ${wins+losses>0?Math.round((wins/(wins+losses))*100):0}%)`;
+        totalStatsText.textContent = `${wins}勝 ${losses}敗 (勝率 ${wins+losses>0?Math.round((wins/(wins+losses))*100):0}%)`;
 
         if (snap.empty) {
-          container.innerHTML = "履歴はありません"; moreBtn.classList.add("hidden"); return;
+          historyListContainer.innerHTML = "履歴はありません"; btnHistoryMore.classList.add("hidden"); return;
         }
 
-        container.innerHTML = "";
+        historyListContainer.innerHTML = "";
         snap.forEach(d => {
           const h = d.data();
           const isWin = h.winnerUid === currentUid;
@@ -564,18 +619,18 @@
             <span class="${isWin?'win-text':'lose-text'}">[${isWin?'WIN':'LOSE'}]</span> 完全決着<br>
             <small style="color:#666">${h.reason || ''}</small>
           `;
-          container.appendChild(card);
+          historyListContainer.appendChild(card);
         });
 
         if (allSnap.size > historyLimitCount) {
-          moreBtn.classList.remove("hidden");
+          btnHistoryMore.classList.remove("hidden");
         } else {
-          moreBtn.classList.add("hidden");
+          btnHistoryMore.classList.add("hidden");
         }
       });
     }
 
-    document.getElementById("btn-history-more").addEventListener("click", () => {
+    btnHistoryMore.addEventListener("click", () => {
       historyLimitCount += 5;
       loadGlobalHistory();
     });
@@ -608,18 +663,177 @@
       loadCanvasOdaiPool();
     });
 
+    // フレンド管理リスナー
+    function setupFriendsListener() {
+      if (unsubscribeFriends) unsubscribeFriends();
+      unsubscribeFriends = onSnapshot(doc(db, "users", currentUid), async (snapshot) => {
+        if (!snapshot.exists()) return;
+        const friendUids = snapshot.data().friends || [];
+        if (friendUids.length === 0) { friendListContainer.innerHTML = "<div class='friend-item'>フレンドはいません</div>"; return; }
+        
+        friendListContainer.innerHTML = "";
+        for (const fUid of friendUids) {
+          const fSnap = await getDoc(doc(db, "users", fUid));
+          if (fSnap.exists()) {
+            const fData = fSnap.data();
+            let isOnline = false;
+            if (fData.lastActive) {
+              const lastActiveTime = fData.lastActive.toDate().getTime();
+              const nowTime = new Date().getTime();
+              isOnline = (nowTime - lastActiveTime < 30000 || lastActiveTime > nowTime);
+            }
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "friend-item";
+            itemDiv.innerHTML = `
+              <div>👤 <span class="friend-name-link" id="link-${fData.uid}">${fData.username}</span>#${fData.userTag || "0000"}
+              <span class="status-badge ${isOnline ? 'status-online' : 'status-offline'}">${isOnline ? '● online' : '○ offline'}</span></div>
+            `;
+            if (isOnline) {
+              const btnGroup = document.createElement("div");
+              btnGroup.className = "btn-invite-group";
+              
+              const inviteShiritori = document.createElement("button");
+              inviteShiritori.className = "btn-invite"; inviteShiritori.textContent = "しりとり申込";
+              inviteShiritori.addEventListener("click", () => sendMatchInvite(fData.uid, fData.username, "shiritori"));
+              
+              const invitePaint = document.createElement("button");
+              invitePaint.className = "btn-invite"; invitePaint.textContent = "イラスト申込";
+              invitePaint.style.backgroundColor = "#ff9800";
+              invitePaint.addEventListener("click", () => sendMatchInvite(fData.uid, fData.username, "ohekaki"));
+              
+              btnGroup.appendChild(inviteShiritori);
+              btnGroup.appendChild(invitePaint);
+              itemDiv.appendChild(btnGroup);
+            }
+            friendListContainer.appendChild(itemDiv);
+            document.getElementById(`link-${fData.uid}`).addEventListener("click", () => showProfileModal(fData.uid, fData.username, fData.userTag));
+          }
+        }
+      });
+    }
+
+    document.getElementById("btn-add-friend").addEventListener("click", async () => {
+      const targetInput = friendSearchInput.value.trim();
+      if (!targetInput.includes("#")) return alert("形式（例: なまえ#1234）が正しくありません。");
+      const [targetName, targetTag] = targetInput.split("#");
+      const q = query(collection(db, "users"), where("username", "==", targetName.trim()), where("userTag", "==", targetTag.trim()));
+      const snap = await getDocs(q);
+      if (snap.empty) return alert("プレイヤーが見つかりません。");
+      const targetUid = snap.docs[0].id;
+      if (targetUid === currentUid) return alert("自分自身は追加できません");
+      await updateDoc(doc(db, "users", currentUid), { friends: arrayUnion(targetUid) });
+      alert("フレンドを追加しました！"); friendSearchInput.value = "";
+    });
+
+    function showProfileModal(uid, username, userTag) {
+      modalUsername.textContent = `${username}#${userTag || "0000"}`;
+      profileModal.classList.remove("hidden");
+      if (uid === currentUid) btnModalAddFriend.classList.add("hidden");
+      else {
+        btnModalAddFriend.classList.remove("hidden");
+        btnModalAddFriend.onclick = async () => {
+          await updateDoc(doc(db, "users", currentUid), { friends: arrayUnion(uid) });
+          alert("フレンドに追加しました！"); profileModal.classList.add("hidden");
+        };
+      }
+    }
+    document.getElementById("btn-modal-close").addEventListener("click", () => profileModal.classList.add("hidden"));
+
+    // 招待受付リスナー
+    async function sendMatchInvite(targetUid, targetName, gameType) {
+      const mySnap = await getDoc(doc(db, "users", currentUid));
+      const myName = mySnap.exists() ? mySnap.data().username : "フレンド";
+      if (!confirm(`${targetName} さんに対戦を申し込みますか？`)) return;
+
+      activeGameType = gameType;
+      let roomId = gameType === "shiritori" ? generateRoomId() : Math.floor(1000 + Math.random() * 9000).toString();
+      const colName = gameType === "shiritori" ? "rooms" : "paint_rooms";
+
+      if (gameType === "shiritori") {
+        await setDoc(doc(db, colName, roomId), {
+          roomId, status: "waiting", players: [currentUid], createdAt: serverTimestamp(), lastWord: "しりとり", usedWords: ["しりとり"], currentTurn: currentUid, shingiCounts: { [currentUid]: 0 }
+        });
+      } else {
+        let initialRoomObj = {
+          roomId, status: "waiting", players: [currentUid], drawer: currentUid, gamePhase: "drawing", answerWord: "", currentDrawing: "", score: { [currentUid]: 0 }, hintsUsedTotal: { [currentUid]: 0 }, hintsRevealedIndexes: [], finishReason: "", createdAt: serverTimestamp(), gameType
+        };
+        if (gameType === "eshiritori") { initialRoomObj.lastWord = "しりとり"; }
+        if (gameType === "canvas") {
+          const mySnap = await getDoc(doc(db, "users", currentUid));
+          initialRoomObj.canvasMatchOdaiPool = mySnap.data().canvasOdaiPool || ["ねこ", "くるま"];
+        }
+        await setDoc(doc(db, colName, roomId), initialRoomObj);
+      }
+
+      const inviteId = "INV_" + generateRoomId();
+      await setDoc(doc(db, "users", targetUid, "invites", inviteId), { roomId, hostName: myName, gameType, createdAt: new Date() });
+
+      currentSentInviteId = inviteId; currentSentInviteTargetUid = targetUid; isFriendMatchMode = true; activeRoomId = roomId;
+
+      if (gameType === "shiritori") {
+        roomTitle.textContent = "フレンドマッチ待機中"; gameStatus.textContent = `${targetName} さんの参加を受け付け中...`;
+        btnCancelInvite.classList.remove("hidden"); btnLeave.classList.add("hidden"); showScreen("game"); watchRoom(roomId);
+      } else {
+        roomTitlePaint.textContent = "フレンドマッチ申込中"; gameStatusPaint.textContent = `${targetName} が受けるのを待っています...`;
+        btnCancelInvitePaint.classList.remove("hidden"); btnLeaveRoomPaint.classList.add("hidden"); showScreen("game-paint"); watchRoomPaint(roomId);
+      }
+    }
+
+    function setupInviteListener() {
+      if (unsubscribeInvite) unsubscribeInvite();
+      unsubscribeInvite = onSnapshot(collection(db, "users", currentUid, "invites"), (snapshot) => {
+        if (snapshot.empty) { inviteZone.classList.add("hidden"); return; }
+        snapshot.docChanges().forEach(async (change) => {
+          if (change.type === "added") {
+            const inviteData = change.doc.data();
+            const gName = inviteData.gameType === "shiritori" ? "【しりとり】" : (inviteData.gameType === "eshiritori" ? "【絵しりとり】" : (inviteData.gameType === "canvas" ? "【キャンバス】" : "【イラスト当て】"));
+            inviteMsgText.textContent = `⚔️ ${inviteData.hostName} から${gName}対戦申し込みが届きました！`;
+            inviteZone.classList.remove("hidden");
+
+            btnAcceptInvite.onclick = async () => {
+              inviteZone.classList.add("hidden"); await deleteDoc(change.doc.ref);
+              activeGameType = inviteData.gameType; activeRoomId = inviteData.roomId; isFriendMatchMode = true;
+              const colName = activeGameType === "shiritori" ? "rooms" : "paint_rooms";
+              const roomRef = doc(db, colName, activeRoomId);
+              const freshSnap = await getDoc(roomRef);
+              if (!freshSnap.exists() || freshSnap.data().status === "finished") return alert("この招待は既に取り消されています。");
+
+              const rData = freshSnap.data();
+              if (activeGameType === "shiritori") {
+                await updateDoc(roomRef, { players: arrayUnion(currentUid), shingiCounts: { ...rData.shingiCounts, [currentUid]: 0 }, status: "playing" });
+                btnLeave.classList.remove("hidden"); showScreen("game"); watchRoom(activeRoomId);
+              } else {
+                let updateObj = { players: arrayUnion(currentUid), status: "playing", score: { ...rData.score, [currentUid]: 0 }, hintsUsedTotal: { ...rData.hintsUsedTotal, [currentUid]: 0 } };
+                if (activeGameType === "canvas") {
+                  const mySnap = await getDoc(doc(db, "users", currentUid));
+                  updateObj.canvasMatchOdaiPool = arrayUnion(...(mySnap.data().canvasOdaiPool || ["ねこ"]));
+                }
+                await updateDoc(roomRef, updateObj);
+                btnLeaveRoomPaint.classList.remove("hidden"); showScreen("game-paint"); watchRoomPaint(activeRoomId);
+              }
+            };
+            btnDeclineInvite.onclick = async () => {
+              inviteZone.classList.add("hidden"); await deleteDoc(change.doc.ref);
+              const colName = inviteData.gameType === "shiritori" ? "rooms" : "paint_rooms";
+              await updateDoc(doc(db, colName, inviteData.roomId), { status: "finished", finishReason: "CANCELED" });
+            };
+          }
+        });
+      });
+    }
+
     /* ==========================================================================
-       共通ゲーム切り替えシステム
+       共通画面切り替えシステム
        ========================================================================== */
     function showScreen(type) {
       const screens = ["login-screen", "register-screen", "menu-screen", "friend-screen", "game-screen", "game-screen-paint"];
       screens.forEach(s => document.getElementById(s).classList.add("hidden"));
-      if (type === "login") document.getElementById("login-screen").classList.remove("hidden");
-      if (type === "register") document.getElementById("register-screen").classList.remove("hidden");
-      if (type === "menu") document.getElementById("menu-screen").classList.remove("hidden");
-      if (type === "friend") document.getElementById("friend-screen").classList.remove("hidden");
-      if (type === "game") document.getElementById("game-screen").classList.remove("hidden");
-      if (type === "game-paint") document.getElementById("game-screen-paint").classList.remove("hidden");
+      if (type === "login") loginScreen.classList.remove("hidden");
+      if (type === "register") registerScreen.classList.remove("hidden");
+      if (type === "menu") menuScreen.classList.remove("hidden");
+      if (type === "friend") friendScreen.classList.remove("hidden");
+      if (type === "game") gameScreen.classList.remove("hidden");
+      if (type === "game-paint") gameScreenPaint.classList.remove("hidden");
     }
 
     document.getElementById("btn-to-friend").addEventListener("click", () => showScreen("friend"));
@@ -629,7 +843,7 @@
        ① しりとりゲームロジック
        ========================================================================== */
     document.getElementById("btn-free").addEventListener("click", async () => {
-      activeGameType = "shiritori"; isFriendMatchMode = false; btnCancelInvite.classList.add("hidden"); btnLeaveRoom.classList.remove("hidden");
+      activeGameType = "shiritori"; isFriendMatchMode = false; btnCancelInvite.classList.add("hidden"); btnLeave.classList.remove("hidden");
       gameStatus.textContent = "マッチ相手検索中..."; roomTitle.textContent = "オートマッチング"; showScreen("game");
       const snap = await getDocs(query(collection(db, "rooms"), where("status", "==", "waiting"), orderBy("createdAt", "asc")));
       let target = null; snap.forEach(d => { if (!target && d.id.startsWith("FREE_")) target = d; });
@@ -644,8 +858,8 @@
     });
 
     document.getElementById("btn-create-room").addEventListener("click", async () => {
-      activeGameType = "shiritori"; isFriendMatchMode = false; btnCancelInvite.classList.add("hidden"); btnLeaveRoom.classList.remove("hidden");
-      activeRoomId = Math.floor(1000 + Math.random() * 9000).toString();
+      activeGameType = "shiritori"; isFriendMatchMode = false; btnCancelInvite.classList.add("hidden"); btnLeave.classList.remove("hidden");
+      activeRoomId = generateRoomId();
       await setDoc(doc(db, "rooms", activeRoomId), { roomId: activeRoomId, status: "waiting", players: [currentUid], createdAt: serverTimestamp(), lastWord: "しりとり", usedWords: ["しりとり"], currentTurn: currentUid, shingiCounts: { [currentUid]: 0 } });
       roomTitle.textContent = `部屋ID: ${activeRoomId}`; showScreen("game"); watchRoom(activeRoomId);
     });
@@ -718,6 +932,7 @@
       shiritoriInput.value = "";
     }
     btnSendWord.addEventListener("click", handleShiritoriSend);
+    shiritoriInput.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) handleShiritoriSend(); });
 
     btnShingi.addEventListener("click", async () => {
       const ref = doc(db, "rooms", activeRoomId); const rData = (await getDoc(ref)).data();
@@ -748,7 +963,7 @@
 
 
     /* ==========================================================================
-       ②③④ グラフィックゲーム制御共通コア (イラスト当て / 絵しりとり / キャンバス)
+       ②③④ グラフィックゲーム制御共通コア
        ========================================================================== */
     const registerGraphicEvents = (btnId, panelInputId, isFree, type) => {
       document.getElementById(btnId).addEventListener("click", async () => {
@@ -761,7 +976,6 @@
           let target = null; snap.forEach(d => { if (!target && d.id.startsWith("FREE_")) target = d; });
           if (target) {
             activeRoomId = target.id;
-            // ④キャンバスモードの場合、お題プールをここでマージしてセットする
             let setupData = { players: arrayUnion(currentUid), status: "playing", score: { ...target.data().score, [currentUid]: 0 }, hintsUsedTotal: { ...target.data().hintsUsedTotal, [currentUid]: 0 } };
             if (type === "canvas") {
               const mySnap = await getDoc(doc(db, "users", currentUid));
@@ -790,7 +1004,6 @@
         }
 
         if (!isFree && panelInputId) {
-          // JoinRoom
           const snap = await getDoc(doc(db, "paint_rooms", activeRoomId));
           if (!snap.exists() || snap.data().status !== "waiting") return alert("入れません");
           let updateObj = { players: arrayUnion(currentUid), status: "playing", score: { ...snap.data().score, [currentUid]: 0 }, hintsUsedTotal: { ...snap.data().hintsUsedTotal, [currentUid]: 0 } };
@@ -800,14 +1013,12 @@
           }
           await updateDoc(doc(db, "paint_rooms", activeRoomId), updateObj);
         } else {
-          // CreateRoom
           await setDoc(doc(db, "paint_rooms", activeRoomId), initialRoomObj);
         }
         roomTitlePaint.textContent = `部屋ID: ${activeRoomId}`; watchRoomPaint(activeRoomId);
       });
     };
 
-    // イベント登録
     registerGraphicEvents("btn-free-match-paint", null, true, "ohekaki");
     registerGraphicEvents("btn-create-room-paint", null, false, "ohekaki");
     registerGraphicEvents("btn-join-room-paint", "room-id-input-paint", false, "ohekaki");
@@ -819,10 +1030,11 @@
     registerGraphicEvents("btn-free-match-canvas", null, true, "canvas");
     registerGraphicEvents("btn-create-room-canvas", null, false, "canvas");
 
-    // グラフィックゲーム監視
+    // グラフィックゲーム監視コア
+    let unsubscribeRoomPaint = null;
     function watchRoomPaint(roomId) {
-      if (unsubscribeRoom) unsubscribeRoom(); localCurrentPhase = ""; isHistorySaved = false;
-      unsubscribeRoom = onSnapshot(doc(db, "paint_rooms", roomId), async (snapshot) => {
+      if (unsubscribeRoomPaint) unsubscribeRoomPaint(); localCurrentPhase = ""; isHistorySaved = false;
+      unsubscribeRoomPaint = onSnapshot(doc(db, "paint_rooms", roomId), async (snapshot) => {
         if (!snapshot.exists()) return;
         const data = snapshot.data(); currentRoomPlayers = data.players;
         const targetGoal = data.gameType === "canvas" ? 15 : 3;
@@ -831,7 +1043,7 @@
         if (data.status === "waiting") {
           gameStatusPaint.textContent = "対戦相手の入室を待機中..."; playAreaPaint.classList.add("hidden"); clearInterval(countdownInterval);
         } else if (data.status === "playing") {
-          playAreaPaint.classList.remove("hidden"); gameStatusPaint.textContent = `【${gameModes[data.gameType].title.split("累")[0]}】対戦中`;
+          playAreaPaint.classList.remove("hidden"); gameStatusPaint.textContent = `ゲーム進行中`;
           const enemy = data.players.find(id => id !== currentUid);
           scoreMyPaint.textContent = `あなた: ${data.score[currentUid]||0}点`;
           scoreEnemyPaint.textContent = `相手: ${data.score[enemy]||0}点`;
@@ -844,7 +1056,6 @@
             } return;
           }
 
-          // ④ キャンバスモードで自動的にお題が未選定の場合は、プールから自動選出してセット
           if (data.gameType === "canvas" && data.gamePhase === "drawing" && !data.answerWord && data.drawer === currentUid) {
             const pool = data.canvasMatchOdaiPool || ["りんご", "みかん"];
             const chosen = pool[Math.floor(Math.random() * pool.length)];
@@ -854,7 +1065,6 @@
 
           const isDrawer = data.drawer === currentUid;
 
-          // 各フェーズの表示切替
           if (data.gamePhase === "drawing") {
             manageLocalTimerPaint(data, 45); isCanvasLocked = false;
             if (localCurrentPhase !== "drawing" && isDrawer) { localCurrentPhase = "drawing"; clearLocalCanvas(); }
@@ -866,6 +1076,7 @@
               roleIndicatorPaint.textContent = msg; roleIndicatorPaint.className = "role-badge drawer-role";
               canvas.classList.remove("hidden"); drawingMonitor.classList.add("hidden");
               drawerPhaseControl.classList.remove("hidden"); drawerOdaiInputZone.classList.add("hidden"); guessDisplayZone.classList.add("hidden");
+              ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.strokeStyle = "#333333";
             } else {
               roleIndicatorPaint.textContent = "相手がお絵描き中..."; roleIndicatorPaint.className = "role-badge guesser-role";
               canvas.classList.add("hidden"); drawingMonitor.classList.remove("hidden");
@@ -873,7 +1084,6 @@
               drawingMonitor.src = data.currentDrawing || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
             }
           } else if (data.gamePhase === "naming") {
-            // ④ キャンバスモードはnamingフェーズをスキップして即 guessing へ移行
             if (data.gameType === "canvas") {
               if (isDrawer) await updateDoc(doc(db, "paint_rooms", roomId), { gamePhase: "guessing" });
               return;
@@ -929,7 +1139,7 @@
           clearInterval(countdownInterval); alert(`終了！\n理由: ${data.finishReason}`);
           if (!isHistorySaved && currentRoomPlayers.length === 2 && currentRoomPlayers[0] === currentUid) {
             isHistorySaved = true;
-            await setDoc(doc(collection(db, "histories")), { uids: currentRoomPlayers, winnerUid: data.winnerUid, reason: data.finishReason, gameType: data.gameType, timestamp: serverTimestamp() });
+            setDoc(doc(collection(db, "histories")), { uids: currentRoomPlayers, winnerUid: data.winnerUid, reason: data.finishReason, gameType: data.gameType, timestamp: serverTimestamp() });
           }
           showScreen("menu");
         }
@@ -952,6 +1162,12 @@
       }, 1000);
     }
 
+    async function navigateToNextDrawer(roomRef, roomData) {
+      const next = roomData.players.find(id => id !== roomData.drawer);
+      await updateDoc(roomRef, { gamePhase: "drawing", drawer: next, answerWord: "", currentDrawing: "", hintsRevealedIndexes: [] });
+      clearInterval(countdownInterval); countdownInterval = null;
+    }
+
     btnFinishDrawing.addEventListener("click", async () => {
       clearInterval(countdownInterval); countdownInterval = null;
       await updateDoc(doc(db, "paint_rooms", activeRoomId), { currentDrawing: canvas.toDataURL("image/webp", 0.3), gamePhase: "naming" });
@@ -962,12 +1178,11 @@
       if (!val || !isHiragana(val)) return alert("ひらがなでお題を決めてください");
       const ref = doc(db, "paint_rooms", activeRoomId); const rData = (await getDoc(ref)).data();
 
-      // ③ 絵しりとり時のしりとり文字検証バリデーション
       if (rData.gameType === "eshiritori") {
         let req = rData.lastWord.slice(-1); if (req === "ー") req = rData.lastWord.slice(-2, -1);
         if (smallToLargeMap[req]) req = smallToLargeMap[req];
         if (val.charAt(0) !== req) return alert(`「${req}」から始まるお題にする必要があります！`);
-        if (val.slice(-1) === "ん") return alert("しりとりなので「ん」で終わるお題は登録できません！");
+        if (val.slice(-1) === "ん") return alert("「ん」で終わるお題はダメです！");
       }
 
       clearInterval(countdownInterval); countdownInterval = null;
@@ -979,17 +1194,30 @@
       const ans = guessInput.value.trim(); if (!ans) return;
       const ref = doc(db, "paint_rooms", activeRoomId); const rData = (await getDoc(ref)).data();
       if (ans === rData.answerWord) {
-        clearInterval(countdownInterval); countdownInterval = null; alert("正解！ポイント獲得！🎉");
+        clearInterval(countdownInterval); countdownInterval = null; alert("正解！🎉");
         let updateData = { score: { ...rData.score, [currentUid]: (rData.score[currentUid]||0) + 1 } };
-        if (rData.gameType === "eshiritori") { updateData.lastWord = ans; } // 単語履歴を引き継ぎ
+        if (rData.gameType === "eshiritori") { updateData.lastWord = ans; }
         await updateDoc(ref, updateData);
         await navigateToNextDrawer(ref, rData);
       } else { alert("ハズレ！"); }
       guessInput.value = "";
     }
     btnSubmitGuess.addEventListener("click", submitGuessLogicPaint);
+    guessInput.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) submitGuessLogicPaint(); });
 
-    // キャンバスお絵描きシステム
+    async function requestHintOpen(index, totalUsed, thisQuestionUsed, roomData) {
+      if (totalUsed >= 10 || thisQuestionUsed >= 2) return alert("制限を超えています");
+      await updateDoc(doc(db, "paint_rooms", activeRoomId), {
+        hintsRevealedIndexes: arrayUnion({ uid: currentUid, idx: index }),
+        hintsUsedTotal: { ...roomData.hintsUsedTotal, [currentUid]: totalUsed + 1 }
+      });
+    }
+
+    // キャンバスお絵描き処理
+    function getMousePos(c, e) {
+      const rect = c.getBoundingClientRect(); const cx = e.touches ? e.touches[0].clientX : e.clientX; const cy = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: (cx - rect.left) * (c.width / rect.width), y: (cy - rect.top) * (c.height / rect.height) };
+    }
     canvas.addEventListener("mousedown", (e) => { if (isCanvasLocked) return; isDrawing = true; const p = getMousePos(canvas, e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
     canvas.addEventListener("mousemove", (e) => { if (!isDrawing || isCanvasLocked) return; const p = getMousePos(canvas, e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
     window.addEventListener("mouseup", async () => {
@@ -1000,7 +1228,8 @@
     canvas.addEventListener("touchmove", (e) => { if (!isDrawing || isCanvasLocked) return; e.preventDefault(); const p = getMousePos(canvas, e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
     canvas.addEventListener("touchend", async () => { isDrawing = false; if (activeRoomId) await updateDoc(doc(db, "paint_rooms", activeRoomId), { currentDrawing: canvas.toDataURL("image/webp", 0.3) }); });
 
-    btnClearCanvas.addEventListener("click", async () => { ctx.clearRect(0, 0, canvas.width, canvas.height); await updateDoc(doc(db, "paint_rooms", activeRoomId), { currentDrawing: "" }); });
+    function clearLocalCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    btnClearCanvas.addEventListener("click", async () => { clearLocalCanvas(); await updateDoc(doc(db, "paint_rooms", activeRoomId), { currentDrawing: "" }); });
 
     btnLeaveRoomPaint.addEventListener("click", async () => {
       if (activeRoomId) {
