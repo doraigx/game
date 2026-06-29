@@ -8,14 +8,29 @@
     body {
       font-family: 'Helvetica Neue', Arial, sans-serif;
       background-color: #f5f7fb;
-      display: flex; justify-content: center; align-items: center;
-      min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
     }
-    .container { width: 100%; max-width: 450px; transition: max-width 0.3s ease; box-sizing: border-box; }
+    .container {
+      width: 100%;
+      max-width: 450px;
+      transition: max-width 0.3s ease;
+      box-sizing: border-box;
+    }
     
     @media (min-width: 850px) {
       .container { max-width: 1000px; }
-      .pc-layout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+      .pc-layout-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        align-items: start;
+      }
     }
 
     h1 { color: #333; margin-bottom: 24px; text-align: center; font-size: 28px; }
@@ -23,114 +38,221 @@
     h3 { color: #444; text-align: left; margin-top: 0; margin-bottom: 16px; font-size: 18px; font-weight: bold; }
     
     .game-card, .card {
-      background: white; padding: 24px; border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: left;
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      text-align: left;
     }
     
     button {
-      background-color: #4285f4; color: white; border: none; padding: 12px 24px;
-      font-size: 16px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold;
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.2s, transform 0.1s;
+      font-weight: bold;
     }
     button:hover { background-color: #357ae8; }
-    button:disabled { background-color: #cccccc !important; cursor: not-allowed; }
+    button:active { transform: scale(0.98); }
+    
+    button:disabled {
+      background-color: #cccccc !important;
+      color: #888888 !important;
+      cursor: not-allowed;
+      transform: none !important;
+    }
     
     input[type="text"], select {
-      box-sizing: border-box; width: 100%; padding: 12px; font-size: 16px;
-      margin-bottom: 16px; border: 1px solid #ccc; border-radius: 6px;
+      box-sizing: border-box;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: white;
     }
     .hidden { display: none !important; }
     
-    .user-info { margin-bottom: 12px; font-weight: bold; color: #333; display: flex; justify-content: space-between; font-size: 16px; }
+    .user-info { margin-bottom: 12px; font-weight: bold; color: #333; display: flex; justify-content: space-between; align-items: center; font-size: 16px; }
     .status-select-zone { font-size: 14px; color: #666; display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+    .status-select-zone select { margin-bottom: 0; width: auto; padding: 6px 10px; font-size: 14px; }
+
     .flex-group { display: flex; gap: 10px; margin-bottom: 0; }
     .flex-group input { margin-bottom: 0; flex: 2; }
     .flex-group button { flex: 1; padding: 12px 10px; font-size: 14px; }
 
-    /* ゲームUI用 */
-    .word-display { font-size: 32px; font-weight: bold; margin: 20px 0; background: #f0f4f8; padding: 15px; border-radius: 8px; text-align: center; }
+    /* ゲームUI用共通パーツ */
+    .word-display { font-size: 32px; font-weight: bold; color: #333; margin: 20px 0; background: #f0f4f8; padding: 15px; border-radius: 8px; text-align: center; }
     .turn-badge, .role-badge { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; margin-bottom: 15px; text-align: center; }
     .my-turn, .guesser-role { background-color: #e6f4ea; color: #137333; }
     .enemy-turn { background-color: #fce8e6; color: #c5221f; }
     .drawer-role { background-color: #ffeebe; color: #b76e00; }
-    .timer-display { font-size: 24px; font-weight: bold; color: #ea4335; margin-bottom: 15px; background: #fff5f5; padding: 8px; border-radius: 6px; text-align: center; }
+    
+    .timer-display { font-size: 24px; font-weight: bold; color: #ea4335; margin-bottom: 15px; background: #fff5f5; padding: 8px; border-radius: 6px; border: 1px solid #fcedeb; text-align: center; }
     .action-group { display: flex; gap: 10px; margin-top: 10px; }
     .btn-action { font-size: 14px; padding: 10px; }
 
-    /* 回答ログUI */
-    .guess-log-box { padding: 10px; border-radius: 6px; text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 14px; transition: all 0.3s; }
-    .guess-correct { color: #137333; background-color: #e6f4ea; border: 2px solid #28a745; }
-    .guess-wrong { color: #c5221f; background-color: #fce8e6; border: 2px solid #dc3545; }
+    /* ★ 回答ログUI ★ */
+    .guess-log-box {
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      margin-bottom: 15px;
+      font-weight: bold;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    .guess-correct {
+      color: #137333;
+      background-color: #e6f4ea;
+      border: 2px solid #28a745;
+    }
+    .guess-wrong {
+      color: #c5221f;
+      background-color: #fce8e6;
+      border: 2px solid #dc3545;
+    }
     
     /* キャンバス */
-    .canvas-container { position: relative; width: 100%; max-width: 320px; margin: 0 auto; aspect-ratio: 1/1; background: #fafafa; border: 2px dashed #ccc; border-radius: 8px; overflow: hidden; }
+    .canvas-container { 
+      position: relative; 
+      width: 100%; 
+      max-width: 320px; 
+      margin: 0 auto; 
+      aspect-ratio: 1 / 1; 
+      background: #fafafa; 
+      border: 2px dashed #ccc; 
+      border-radius: 8px; 
+      overflow: hidden; 
+      box-sizing: border-box; 
+    }
     canvas { width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: none; }
     .drawing-monitor { width: 100%; height: 100%; object-fit: contain; display: block; background: #fafafa; }
     .clear-btn { background-color: #666; margin-top: 10px; padding: 10px; font-size: 14px; }
     .score-board { display: flex; justify-content: space-around; background: #f0f4f8; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; font-size: 16px; }
     
     .dot-container { display: flex; justify-content: center; gap: 8px; margin: 15px 0; flex-wrap: wrap; }
-    .char-dot { width: 36px; height: 36px; background-color: #e0e0e0; border: 2px solid #bcbcbc; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; cursor: pointer; user-select: none; }
+    .char-dot {
+      width: 36px; height: 36px; background-color: #e0e0e0; border: 2px solid #bcbcbc;
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: bold; color: #333; cursor: pointer; user-select: none;
+    }
     .char-dot.revealed { background-color: #d4edda; border-color: #28a745; }
 
-    /* リスト・モーダル周り */
-    .friend-list { background: #f9f9f9; padding: 10px; border-radius: 6px; max-height: 250px; overflow-y: auto; margin-bottom: 15px; border: 1px solid #eee; }
-    .friend-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    /* フレンド・リスト */
+    .friend-list { text-align: left; background: #f9f9f9; padding: 10px; border-radius: 6px; max-height: 250px; overflow-y: auto; margin-bottom: 15px; border: 1px solid #eee; }
+    .friend-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; color: #444; font-size: 14px; }
+    .friend-name-link, .name-link { cursor: pointer; text-decoration: underline; color: #4285f4; font-weight: bold; }
     .status-badge { font-size: 11px; padding: 2px 6px; border-radius: 10px; font-weight: bold; margin-left: 5px; }
     .status-online { background-color: #e6f4ea; color: #137333; }
     .status-offline { background-color: #f1f3f4; color: #5f6368; }
-    .invite-alert-box { background-color: #fff3cd; border: 2px dashed #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #856404; }
-    .history-card { background: #fafafa; border: 1px solid #eef0f4; padding: 12px; border-radius: 6px; margin-bottom: 8px; font-size: 13px; }
+    .btn-invite-group { display: flex; flex-direction: column; gap: 4px; }
+    .btn-invite { background-color: #34a853; font-size: 10px; padding: 4px 6px; width: auto; border-radius: 4px; color: white; border: none; cursor: pointer; }
+    .invite-alert-box { background-color: #fff3cd; border: 2px dashed #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #856404; text-align: left; }
+
+    /* 戦績・履歴 */
+    .stats-display { font-size: 24px; font-weight: bold; color: #333; text-align: center; margin: 10px 0; }
+    .history-card { background: #fafafa; border: 1px solid #eef0f4; padding: 12px; border-radius: 6px; margin-bottom: 8px; font-size: 13px; text-align: left; }
+    .history-time { display: block; font-size: 11px; color: #aaa; margin-bottom: 4px; }
     .win-text { color: #137333; font-weight: bold; }
     .lose-text { color: #c5221f; font-weight: bold; }
+    .btn-small-edit { background-color: #666; font-size: 11px; padding: 4px 8px; width: auto; border-radius: 4px; margin-left: 8px; }
+    
     .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; justify-content:center; align-items:center; z-index:999; }
+    
+    /* モード選択グリッド・タブ */
     .mode-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
-    .tab-btn { background-color: #e0e0e0; color: #333; padding: 10px 4px; border-radius: 6px; text-align: center; font-size: 12px; font-weight: bold; border: none; }
+    .tab-btn { background-color: #e0e0e0; color: #333; padding: 10px 4px; border-radius: 6px; text-align: center; font-size: 12px; font-weight: bold; border: none; cursor: pointer; }
     .tab-btn.active { background-color: #4285f4; color: white; }
 
-    /* キャンバスお題リスト */
-    .odai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 400px; overflow-y: auto; padding: 5px; }
-    .odai-card { background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 8px; text-align: center; }
-    .odai-card img { width: 100%; aspect-ratio: 1/1; object-fit: contain; background: #fafafa; border-radius: 4px; margin-bottom: 8px; border: 1px solid #eee; }
-    .odai-card p { margin: 0 0 8px 0; font-weight: bold; font-size: 14px; }
+    /* ★ キャンバスお題リスト UI ★ */
+    .odai-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 5px;
+    }
+    .odai-card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 8px;
+      text-align: center;
+    }
+    .odai-card img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: contain;
+      background: #fafafa;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      border: 1px solid #eee;
+    }
+    .odai-card p {
+      margin: 0 0 8px 0;
+      font-weight: bold;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
 
   <div class="container">
     <div id="loading-status">接続チェック中...</div>
+
     <div id="invite-notification-zone" class="invite-alert-box hidden">
       <span id="invite-msg-text">〇〇から対戦申し込みが来ました！</span>
-      <div class="action-group">
-        <button id="btn-accept-invite" style="background-color: #28a745;">受ける</button>
-        <button id="btn-decline-invite" style="background-color: #dc3545;">断る</button>
+      <div class="action-group" style="margin-top: 10px;">
+        <button id="btn-accept-invite" style="background-color: #28a745; padding: 6px;">受ける</button>
+        <button id="btn-decline-invite" style="background-color: #dc3545; padding: 6px;">断る</button>
       </div>
     </div>
 
+    <!-- ログイン・登録画面 -->
     <div id="login-screen" class="game-card hidden" style="text-align: center;">
       <h1>マルチゲームポータル</h1>
+      <p>ゲームを始めるにはGoogleアカウントでログインしてください。</p>
       <button id="btn-login">Googleでログイン</button>
     </div>
+
     <div id="register-screen" class="game-card hidden" style="text-align: center;">
       <h1>プロフィール登録</h1>
-      <input type="text" id="username-input" placeholder="名前（ひらがな）" autocomplete="off">
-      <button id="btn-register">登録</button>
+      <p>ユーザーネームを決めてください（ひらがなのみ）</p>
+      <input type="text" id="username-input" placeholder="ここに名前を入力" autocomplete="off">
+      <button id="btn-register">登録して次へ</button>
     </div>
 
+    <!-- メインメニュー画面 -->
     <div id="menu-screen" class="hidden">
       <h1>ゲームポータル</h1>
+      
       <div class="pc-layout-grid">
         <div class="pc-left-col">
           <div class="game-card">
             <h3>プレイヤー情報</h3>
             <div class="user-info">
               <span id="user-display">名前: ----</span>
-              <button id="btn-edit-name" style="background-color:#666; width:auto; padding:4px 8px; font-size:11px;">変更</button>
+              <button id="btn-edit-name" class="btn-small-edit">変更</button>
             </div>
             <div class="status-select-zone">
               <span>自分の状態:</span>
-              <select id="select-my-status"><option value="auto">自動</option><option value="online">オンライン</option><option value="offline">オフライン</option></select>
+              <select id="select-my-status">
+                <option value="auto">自動</option>
+                <option value="online">オンライン</option>
+                <option value="offline">オフライン</option>
+              </select>
             </div>
-            <button id="btn-to-friend" style="background-color: #9c27b0;">フレンド・オンラインリスト</button>
+            <button id="btn-to-friend" style="background-color: #9c27b0; padding: 12px;">フレンド・オンラインリスト</button>
           </div>
 
           <div class="mode-tabs">
@@ -140,51 +262,72 @@
             <button id="tab-canvas" class="tab-btn">④ キャンバス</button>
           </div>
 
+          <!-- ① しりとりパネル -->
           <div id="panel-shiritori">
             <div class="game-card">
-              <h3>① しりとり</h3>
-              <div class="flex-group"><input type="text" id="room-id-input" placeholder="部屋ID"><button id="btn-join-room">入る</button></div>
-              <div class="action-group">
-                <button id="btn-create-room" style="background-color: #f4b400;">部屋作成</button>
-                <button id="btn-free" style="background-color: #34a853;">オートマッチ</button>
+              <h3>① しりとり：対戦モード</h3>
+              <button id="btn-create-room" style="background-color: #f4b400; margin-bottom: 16px;">新しく部屋を作る</button>
+              <div class="flex-group">
+                <input type="text" id="room-id-input" placeholder="4桁の部屋ID" autocomplete="off">
+                <button id="btn-join-room">部屋に入る</button>
               </div>
+            </div>
+            <div class="game-card">
+              <h3>① しりとり：フリーモード</h3>
+              <button id="btn-free" style="background-color: #34a853;">オートマッチング</button>
             </div>
           </div>
 
+          <!-- ② イラスト当てパネル -->
           <div id="panel-ohekaki" class="hidden">
             <div class="game-card">
-              <h3>② イラスト当て</h3>
+              <h3>② イラスト当て：対戦モード</h3>
               <div style="font-size:12px; margin-bottom:10px;">
-                <label><input type="checkbox" id="chk-record-ohekaki" checked> ゲーム後の絵とお題をキャンバス出題プールに記録公開する</label>
+                <label>
+                  <input type="checkbox" id="chk-record-ohekaki" checked> 
+                  ゲーム後の絵とお題をキャンバス出題プールに記録公開する
+                </label>
               </div>
-              <div class="flex-group"><input type="text" id="room-id-input-paint" placeholder="部屋ID"><button id="btn-join-room-paint">入る</button></div>
-              <div class="action-group">
-                <button id="btn-create-room-paint" style="background-color: #f4b400;">部屋作成</button>
-                <button id="btn-free-match-paint" style="background-color: #34a853;">オートマッチ</button>
+              <button id="btn-create-room-paint" style="background-color: #f4b400; margin-bottom: 16px;">新しく部屋を作る</button>
+              <div class="flex-group">
+                <input type="text" id="room-id-input-paint" placeholder="4桁の部屋ID" autocomplete="off">
+                <button id="btn-join-room-paint">部屋に入る</button>
               </div>
+            </div>
+            <div class="game-card">
+              <h3>② イラスト当て：フリーモード</h3>
+              <button id="btn-free-match-paint" style="background-color: #34a853;">オートマッチング</button>
             </div>
           </div>
 
+          <!-- ③ 絵しりとりパネル -->
           <div id="panel-eshiritori" class="hidden">
             <div class="game-card">
-              <h3>③ 絵しりとり</h3>
-              <div class="flex-group"><input type="text" id="room-id-input-eshiritori" placeholder="部屋ID"><button id="btn-join-room-eshiritori">入る</button></div>
-              <div class="action-group">
-                <button id="btn-create-room-eshiritori" style="background-color: #f4b400;">部屋作成</button>
-                <button id="btn-free-match-eshiritori" style="background-color: #34a853;">オートマッチ</button>
+              <h3>③ 絵しりとり：対戦モード</h3>
+              <button id="btn-create-room-eshiritori" style="background-color: #f4b400; margin-bottom: 16px;">新しく部屋を作る</button>
+              <div class="flex-group">
+                <input type="text" id="room-id-input-eshiritori" placeholder="4桁の部屋ID" autocomplete="off">
+                <button id="btn-join-room-eshiritori">部屋に入る</button>
               </div>
+            </div>
+            <div class="game-card">
+              <h3>③ 絵しりとり：フリーモード</h3>
+              <button id="btn-free-match-eshiritori" style="background-color: #34a853;">オートマッチング</button>
             </div>
           </div>
 
+          <!-- ④ キャンバスパネル -->
           <div id="panel-canvas" class="hidden">
             <div class="game-card">
               <h3>④ キャンバス（お題データベース管理）</h3>
               <p style="font-size:12px; color:#555;">自作の問題を投稿したり、他人の問題で早押しクイズ対戦ができます。</p>
+              
               <div class="action-group" style="margin-bottom:15px;">
                 <button id="btn-open-canvas-register" style="background-color: #9c27b0;">新しく問題を投稿</button>
                 <button id="btn-open-canvas-list" style="background-color: #607d8b;">自分の投稿一覧</button>
               </div>
               <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+              
               <h3>クイズ対戦モード</h3>
               <button id="btn-create-room-canvas" style="background-color: #f4b400; margin-bottom: 10px;">新しく部屋を作る</button>
               <button id="btn-free-match-canvas" style="background-color: #34a853;">オートマッチング（15pt先取）</button>
@@ -206,15 +349,32 @@
       </div>
     </div>
 
+    <!-- フレンド・オンラインリスト モーダル -->
     <div id="friend-screen" class="hidden">
       <div class="card" style="text-align: center;">
         <h2>👥 フレンド・オンラインリスト</h2>
+        <div id="friend-my-tag" style="color: #9c27b0; font-weight: bold; font-size: 16px; margin-bottom:15px;">あなたの名前: ----</div>
         <div id="friend-list-container" class="friend-list">フレンドはいません</div>
-        <div class="flex-group"><input type="text" id="friend-search-input" placeholder="なまえ#1234"><button id="btn-add-friend">追加</button></div>
-        <button id="btn-friend-back" style="background-color: #888; margin-top:10px;">戻る</button>
+        <h3>➕ フレンド追加</h3>
+        <div class="flex-group" style="margin-bottom: 16px;">
+          <input type="text" id="friend-search-input" placeholder="例: なまえ#1234" autocomplete="off">
+          <button id="btn-add-friend" style="background-color: #9c27b0;">追加</button>
+        </div>
+        <button id="btn-friend-back" style="background-color: #888;">メニューに戻る</button>
       </div>
     </div>
 
+    <!-- プロフィール モーダル -->
+    <div id="profile-modal" class="modal-overlay hidden">
+      <div class="card" style="width: 90%; max-width: 350px; text-align: center;">
+        <h2>👤 プロフィール</h2>
+        <p style="font-size:18px; font-weight:bold; margin:8px 0;" id="modal-username">----</p>
+        <button id="btn-modal-add-friend" style="background-color: #9c27b0; margin-bottom:12px;">この人をフレンドに追加</button>
+        <button id="btn-modal-close" style="background-color: #888;">閉じる</button>
+      </div>
+    </div>
+
+    <!-- ★ キャンバスお題登録モーダル ★ -->
     <div id="modal-canvas-register" class="modal-overlay hidden">
       <div class="card" style="width: 95%; max-width: 400px; text-align: center;">
         <h2>🎨 問題の投稿</h2>
@@ -228,6 +388,7 @@
       </div>
     </div>
 
+    <!-- ★ キャンバスお題一覧（公開設定）モーダル ★ -->
     <div id="modal-canvas-list" class="modal-overlay hidden">
       <div class="card" style="width: 95%; max-width: 500px; text-align: center;">
         <h2>📚 自分の投稿一覧</h2>
@@ -236,10 +397,38 @@
       </div>
     </div>
 
+    <!-- しりとりゲーム画面 -->
+    <div id="game-screen" class="game-card hidden" style="max-width: 500px; margin: 0 auto;">
+      <h2 id="room-title">部屋ID: ----</h2>
+      <div id="game-status" style="font-weight: bold; color: #555; text-align: center; margin-bottom: 20px;">相手の参加を待っています...</div>
+      <button id="btn-cancel-invite" class="hidden" style="background-color: #e0a800; color: white; margin-bottom: 20px;">招待を取り消す</button>
+
+      <div id="shiritori-area" class="hidden">
+        <div id="timer-box" class="timer-display">残り時間: 15秒</div>
+        <div style="text-align: center;"><div id="turn-indicator" class="turn-badge">読み込み中...</div></div>
+        <div class="word-display" id="current-word">ーーー</div>
+        <div class="flex-group">
+          <input type="text" id="shiritori-input" placeholder="次の単語を入力（ひらがな）" autocomplete="off">
+          <button id="btn-send-word" style="background-color: #34a853;">送信</button>
+        </div>
+        <div class="action-group">
+          <div style="flex: 1;">
+            <button id="btn-shingi" class="btn-action" style="background-color: #ff9800;">審議</button>
+          </div>
+          <div style="flex: 1;">
+            <button id="btn-retire" class="btn-action" style="background-color: #ea4335;">リタイア</button>
+          </div>
+        </div>
+        <div id="shingi-counter" class="shingi-count-text">審議残り: 10回</div>
+      </div>
+      <button id="btn-leave" style="background-color: #888; margin-top: 30px;">メニューに戻る</button>
+    </div>
+
+    <!-- グラフィック系ゲーム画面 (②③④共通) -->
     <div id="game-screen-paint" class="card hidden">
       <h2 id="room-title-paint">部屋ID: ----</h2>
-      <div id="game-status-paint" style="font-weight: bold; color: #555; text-align: center; margin-bottom: 15px;">待機中...</div>
-      <button id="btn-cancel-invite-paint" class="hidden" style="background-color: #e0a800;">申し込み取消</button>
+      <div id="game-status-paint" style="font-weight: bold; color: #555; text-align: center; margin-bottom: 15px;">相手の参加を待っています...</div>
+      <button id="btn-cancel-invite-paint" class="hidden" style="background-color: #e0a800; margin-bottom: 15px;">対戦申し込みを取り消す</button>
 
       <div id="play-area-paint" class="hidden">
         <div class="score-board">
@@ -251,37 +440,42 @@
         <div id="timer-box-paint" class="timer-display">残り時間: --秒</div>
         <div style="text-align: center;"><div id="role-indicator-paint" class="role-badge">読み込み中...</div></div>
         
-        <div id="guess-log-box" class="guess-log-box hidden"><span id="guess-log-text"></span></div>
+        <!-- ★ 回答ログ共有エリア ★ -->
+        <div id="guess-log-box" class="guess-log-box hidden">
+          <span id="guess-log-text"></span>
+        </div>
 
         <div class="canvas-container" id="canvas-wrapper-play">
-          <canvas id="paint-canvas" class="hidden"></canvas>
-          <img id="drawing-monitor" class="drawing-monitor hidden" src="" alt="表示画像">
+          <canvas id="paint-canvas" class="hidden" width="400" height="400"></canvas>
+          <img id="drawing-monitor" class="drawing-monitor hidden" src="" alt="相手が描いた絵">
         </div>
 
         <div id="drawer-phase-control" class="hidden" style="margin-top:15px;">
-          <button id="btn-clear-canvas" class="clear-btn" style="width:100%; margin-bottom:12px;">クリア</button>
-          <button id="btn-finish-drawing" style="background-color: #e0a800;">お絵描きを終了</button>
+          <button id="btn-clear-canvas" class="clear-btn" style="width:100%; margin-bottom:12px;">キャンバスをクリア</button>
+          <button id="btn-finish-drawing" style="background-color: #e0a800;">お絵描きを終了してお題確定へ</button>
         </div>
 
         <div id="drawer-odai-input-zone" class="hidden" style="margin-top:15px;">
-          <p id="odai-instruction-text" style="font-size:14px; color:#555; font-weight:bold;">お題を入力（ひらがな）</p>
+          <p id="odai-instruction-text" style="font-size:14px; color:#555; margin:0 0 8px 0; font-weight:bold;">【描き手用】お題を入力（ひらがなのみ）</p>
           <div class="flex-group">
             <input type="text" id="odai-input" placeholder="お題を入力" autocomplete="off">
-            <button id="btn-submit-odai">確定</button>
+            <button id="btn-submit-odai" style="background-color: #4285f4;">お題確定</button>
           </div>
         </div>
 
         <div id="guess-display-zone" class="hidden" style="margin-top:15px;">
-          <div style="font-size:13px; color:#666; text-align:center;" id="hint-remaining-text">ヒント残り: --回</div>
+          <div style="font-size:13px; color:#666; text-align:center;" id="hint-remaining-text">ヒント残り総数: 10回</div>
           <div class="dot-container" id="char-dots-wrapper"></div>
+          
           <div id="guesser-input-zone" class="hidden">
             <div class="flex-group">
-              <input type="text" id="guess-input" placeholder="ひらがなで回答" autocomplete="off">
+              <input type="text" id="guess-input" placeholder="ひらがなで回答を入力" autocomplete="off">
               <button id="btn-submit-guess" style="background-color: #34a853;">回答</button>
             </div>
           </div>
         </div>
       </div>
+      
       <button id="btn-leave-paint" style="background-color: #888; margin-top: 25px;">退出する</button>
     </div>
   </div>
@@ -304,18 +498,21 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // グローバル状態
+    // グローバル状態管理
     let currentUid = null;
     let activeRoomId = null;
     let activeGameType = "shiritori"; 
     let historyLimitCount = 5;
     let countdownInterval = null;
+    let heartBeatInterval = null;
     let remainingTime = 15;
     let localCurrentPhase = "";
-    let localLastGuessTime = 0;
+    let localLastGuessTime = 0; // ログ表示管理用
     let isHistorySaved = false;
     let unsubscribeRoomPaint = null;
     let unsubscribeHistory = null;
+    let unsubscribeFriends = null;
+    let unsubscribeInvite = null;
     
     // Canvas制御
     let isDrawing = false;
@@ -325,15 +522,26 @@
     const canvasReg = document.getElementById("register-canvas");
     const ctxReg = canvasReg.getContext("2d");
 
-    // ユーティリティ
+    const smallToLargeMap = { 'ゃ': 'や', 'ゅ': 'ゆ', 'ょ': 'よ', 'っ': 'つ' };
+
+    // ユーティリティ関数
     function isHiragana(str) { return /^[ぁ-んー]+$/.test(str); }
-    const formatTimestamp = (ts) => {
-      if (!ts) return "--/-- --:--"; const d = ts.toDate();
-      return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const generateRoomId = () => {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      let res = ""; for (let i = 0; i < 4; i++) res += chars.charAt(Math.floor(Math.random() * chars.length)); return res;
     };
+    const generateUserTag = () => Math.floor(1000 + Math.random() * 9000).toString();
+    const formatTimestamp = (ts) => {
+      if (!ts) return "--/-- --:--"; 
+      const d = ts.toDate();
+      return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    };
+
     function showScreen(type) {
-      ["login-screen", "register-screen", "menu-screen", "friend-screen", "game-screen-paint"].forEach(s => {
-        const el = document.getElementById(s); if(el) el.classList.add("hidden");
+      const screens = ["login-screen", "register-screen", "menu-screen", "friend-screen", "game-screen", "game-screen-paint"];
+      screens.forEach(s => {
+        const el = document.getElementById(s);
+        if(el) el.classList.add("hidden");
       });
       document.getElementById(type).classList.remove("hidden");
     }
@@ -341,26 +549,56 @@
     // キャンバスセットアップ関数
     function setupDrawingLogic(cnv, ctx, wrapperId) {
       const wrapper = document.getElementById(wrapperId);
-      const resize = () => { cnv.width = wrapper.clientWidth; cnv.height = wrapper.clientHeight; };
-      resize(); window.addEventListener('resize', resize);
+      const resize = () => { 
+        cnv.width = wrapper.clientWidth; 
+        cnv.height = wrapper.clientHeight; 
+      };
+      resize(); 
+      window.addEventListener('resize', resize);
       
       const getPos = (e) => {
-        const rect = cnv.getBoundingClientRect(); const cx = e.touches ? e.touches[0].clientX : e.clientX; const cy = e.touches ? e.touches[0].clientY : e.clientY;
-        return { x: (cx - rect.left) * (cnv.width / rect.width), y: (cy - rect.top) * (cnv.height / rect.height) };
+        const rect = cnv.getBoundingClientRect(); 
+        const cx = e.touches ? e.touches[0].clientX : e.clientX; 
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        return { 
+          x: (cx - rect.left) * (cnv.width / rect.width), 
+          y: (cy - rect.top) * (cnv.height / rect.height) 
+        };
       };
       
-      const start = (e) => { if(isCanvasLocked) return; isDrawing = true; const p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); };
-      const move = (e) => { if(!isDrawing||isCanvasLocked) return; e.preventDefault(); const p=getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); };
+      const start = (e) => { 
+        if(isCanvasLocked) return; 
+        isDrawing = true; 
+        const p = getPos(e); 
+        ctx.beginPath(); 
+        ctx.moveTo(p.x, p.y); 
+      };
+      
+      const move = (e) => { 
+        if(!isDrawing || isCanvasLocked) return; 
+        e.preventDefault(); 
+        const p = getPos(e); 
+        ctx.lineTo(p.x, p.y); 
+        ctx.stroke(); 
+      };
+      
       const end = async () => {
-        if(!isDrawing||isCanvasLocked) return; isDrawing = false;
-        if(cnv.id === "paint-canvas" && activeRoomId) await updateDoc(doc(db, "paint_rooms", activeRoomId), { currentDrawing: cnv.toDataURL("image/webp", 0.3) });
+        if(!isDrawing || isCanvasLocked) return; 
+        isDrawing = false;
+        if(cnv.id === "paint-canvas" && activeRoomId) {
+          await updateDoc(doc(db, "paint_rooms", activeRoomId), { currentDrawing: cnv.toDataURL("image/webp", 0.3) });
+        }
       };
       
-      cnv.addEventListener("mousedown", start); cnv.addEventListener("mousemove", move); window.addEventListener("mouseup", end);
-      cnv.addEventListener("touchstart", start, {passive:false}); cnv.addEventListener("touchmove", move, {passive:false}); cnv.addEventListener("touchend", end);
+      cnv.addEventListener("mousedown", start); 
+      cnv.addEventListener("mousemove", move); 
+      window.addEventListener("mouseup", end);
+      cnv.addEventListener("touchstart", start, {passive:false}); 
+      cnv.addEventListener("touchmove", move, {passive:false}); 
+      cnv.addEventListener("touchend", end);
     }
     
-    // UI初期化遅延
+    // UI初期化遅延セットアップ
     setTimeout(() => {
       setupDrawingLogic(canvasPlay, ctxPlay, "canvas-wrapper-play");
       setupDrawingLogic(canvasReg, ctxReg, "canvas-wrapper-register");
@@ -368,78 +606,191 @@
 
     // 認証と初期化
     onAuthStateChanged(auth, async (user) => {
-      if (user) { currentUid = user.uid; await loadUserData(); } 
-      else { showScreen("login-screen"); }
+      if (user) { 
+        currentUid = user.uid; 
+        await loadUserData(); 
+      } else { 
+        showScreen("login-screen"); 
+      }
     });
-    document.getElementById("btn-login").addEventListener("click", () => signInWithPopup(auth, new GoogleAuthProvider()));
+
+    document.getElementById("btn-login").addEventListener("click", () => {
+      signInWithPopup(auth, new GoogleAuthProvider());
+    });
     
     async function loadUserData() {
       const snap = await getDoc(doc(db, "users", currentUid));
       if (snap.exists()) {
-        document.getElementById("user-display").textContent = `名前: ${snap.data().username}`;
-        showScreen("menu-screen"); loadGlobalHistory();
-      } else { showScreen("register-screen"); }
+        const uData = snap.data();
+        document.getElementById("user-display").textContent = `名前: ${uData.username}`;
+        document.getElementById("friend-my-tag").textContent = `あなたの名前: ${uData.username}#${uData.userTag}`;
+        showScreen("menu-screen"); 
+        loadGlobalHistory();
+        setupFriendsListener();
+        setupInviteListener();
+      } else { 
+        showScreen("register-screen"); 
+      }
     }
 
-    // タブ制御
+    document.getElementById("btn-register").addEventListener("click", async () => {
+      const name = document.getElementById("username-input").value.trim();
+      if (!name || !isHiragana(name) || name.includes("#")) return alert("名前はひらがなのみで入力してください。");
+      await setDoc(doc(db, "users", currentUid), { 
+        uid: currentUid, 
+        username: name, 
+        userTag: generateUserTag(), 
+        friends: [], 
+        settingStatus: "auto", 
+        lastActive: serverTimestamp() 
+      });
+      await loadUserData();
+    });
+
+    // タブ制御と履歴分離
     const modes = {
-      shiritori: { tab: "tab-shiritori", p: "panel-shiritori", t: "🏆 ① しりとり" },
-      ohekaki: { tab: "tab-ohekaki", p: "panel-ohekaki", t: "🏆 ② イラスト当て" },
-      eshiritori: { tab: "tab-eshiritori", p: "panel-eshiritori", t: "🏆 ③ 絵しりとり" },
-      canvas: { tab: "tab-canvas", p: "panel-canvas", t: "🏆 ④ キャンバス" }
+      shiritori: { tab: "tab-shiritori", p: "panel-shiritori", t: "🏆 ① しりとり累計戦績" },
+      ohekaki: { tab: "tab-ohekaki", p: "panel-ohekaki", t: "🏆 ② イラスト当て累計戦績" },
+      eshiritori: { tab: "tab-eshiritori", p: "panel-eshiritori", t: "🏆 ③ 絵しりとり累計戦績" },
+      canvas: { tab: "tab-canvas", p: "panel-canvas", t: "🏆 ④ キャンバス累計戦績" }
     };
+
     Object.keys(modes).forEach(k => {
       document.getElementById(modes[k].tab).addEventListener("click", () => {
-        Object.keys(modes).forEach(m => { document.getElementById(modes[m].tab).classList.remove("active"); document.getElementById(modes[m].p).classList.add("hidden"); });
-        document.getElementById(modes[k].tab).classList.add("active"); document.getElementById(modes[k].p).classList.remove("hidden");
-        activeGameType = k; historyLimitCount = 5; document.getElementById("stats-title").textContent = modes[k].t; loadGlobalHistory();
+        Object.keys(modes).forEach(m => { 
+          document.getElementById(modes[m].tab).classList.remove("active"); 
+          document.getElementById(modes[m].p).classList.add("hidden"); 
+        });
+        document.getElementById(modes[k].tab).classList.add("active"); 
+        document.getElementById(modes[k].p).classList.remove("hidden");
+        
+        activeGameType = k; 
+        historyLimitCount = 5; 
+        document.getElementById("stats-title").textContent = modes[k].t; 
+        loadGlobalHistory();
       });
     });
 
     // 履歴ロード
     function loadGlobalHistory() {
       if(unsubscribeHistory) unsubscribeHistory();
-      const q = query(collection(db, "histories"), where("uids", "array-contains", currentUid), where("gameType", "==", activeGameType), orderBy("timestamp", "desc"), limit(historyLimitCount));
+      
+      const q = query(
+        collection(db, "histories"), 
+        where("uids", "array-contains", currentUid), 
+        where("gameType", "==", activeGameType), 
+        orderBy("timestamp", "desc"), 
+        limit(historyLimitCount)
+      );
+      
       unsubscribeHistory = onSnapshot(q, async (snap) => {
-        const c = document.getElementById("history-list-container"); c.innerHTML = "";
-        if(snap.empty){ c.textContent="履歴なし"; document.getElementById("btn-history-more").classList.add("hidden"); return; }
+        const allSnap = await getDocs(query(
+          collection(db, "histories"), 
+          where("uids", "array-contains", currentUid), 
+          where("gameType", "==", activeGameType)
+        ));
+        
+        let wins = 0; let losses = 0;
+        allSnap.forEach(d => { if (d.data().winnerUid === currentUid) wins++; else losses++; });
+        document.getElementById("total-stats-text").textContent = `${wins}勝 ${losses}敗 (勝率 ${wins+losses>0?Math.round((wins/(wins+losses))*100):0}%)`;
+
+        const c = document.getElementById("history-list-container"); 
+        c.innerHTML = "";
+        
+        if(snap.empty){ 
+          c.textContent = "履歴はありません"; 
+          document.getElementById("btn-history-more").classList.add("hidden"); 
+          return; 
+        }
+        
         snap.forEach(d => {
-          const h = d.data(); const isWin = h.winnerUid === currentUid;
-          c.innerHTML += `<div class="history-card"><span class="history-time">${formatTimestamp(h.timestamp)}</span> <span class="${isWin?'win-text':'lose-text'}">[${isWin?'WIN':'LOSE'}]</span> ${h.reason||''}</div>`;
+          const h = d.data(); 
+          const isWin = h.winnerUid === currentUid;
+          c.innerHTML += `
+            <div class="history-card">
+              <span class="history-time">📅 ${formatTimestamp(h.timestamp)}</span> 
+              <span class="${isWin?'win-text':'lose-text'}">[${isWin?'WIN':'LOSE'}]</span> 
+              <small style="color:#666">${h.reason||''}</small>
+            </div>
+          `;
         });
-        document.getElementById("btn-history-more").classList.remove("hidden");
+
+        if (allSnap.size > historyLimitCount) {
+          document.getElementById("btn-history-more").classList.remove("hidden");
+        } else {
+          document.getElementById("btn-history-more").classList.add("hidden");
+        }
       });
     }
-    document.getElementById("btn-history-more").addEventListener("click", () => { historyLimitCount+=5; loadGlobalHistory(); });
+
+    document.getElementById("btn-history-more").addEventListener("click", () => { 
+      historyLimitCount += 5; 
+      loadGlobalHistory(); 
+    });
+
 
     // ==========================================
     // キャンバスお題DB（モーダル制御・登録・一覧）
     // ==========================================
     document.getElementById("btn-open-canvas-register").addEventListener("click", () => {
       document.getElementById("modal-canvas-register").classList.remove("hidden");
-      ctxReg.clearRect(0,0,canvasReg.width,canvasReg.height); document.getElementById("register-odai-input").value = "";
+      ctxReg.clearRect(0,0,canvasReg.width,canvasReg.height); 
+      document.getElementById("register-odai-input").value = "";
     });
-    document.getElementById("btn-close-register-modal").addEventListener("click", () => document.getElementById("modal-canvas-register").classList.add("hidden"));
-    document.getElementById("btn-register-clear").addEventListener("click", () => ctxReg.clearRect(0,0,canvasReg.width,canvasReg.height));
+
+    document.getElementById("btn-close-register-modal").addEventListener("click", () => {
+      document.getElementById("modal-canvas-register").classList.add("hidden");
+    });
+
+    document.getElementById("btn-register-clear").addEventListener("click", () => {
+      ctxReg.clearRect(0,0,canvasReg.width,canvasReg.height);
+    });
     
     document.getElementById("btn-submit-register-odai").addEventListener("click", async () => {
       const w = document.getElementById("register-odai-input").value.trim();
       if(!w || !isHiragana(w)) return alert("ひらがなでお題を入力してください");
+      
       const img = canvasReg.toDataURL("image/webp", 0.3);
-      await addDoc(collection(db, "canvas_odai"), { creatorUid: currentUid, word: w, image: img, isPublic: true, createdAt: serverTimestamp() });
-      alert("公開登録しました！"); document.getElementById("modal-canvas-register").classList.add("hidden");
+      await addDoc(collection(db, "canvas_odai"), { 
+        creatorUid: currentUid, 
+        word: w, 
+        image: img, 
+        isPublic: true, 
+        createdAt: serverTimestamp() 
+      });
+      
+      alert("公開登録しました！"); 
+      document.getElementById("modal-canvas-register").classList.add("hidden");
     });
 
     document.getElementById("btn-open-canvas-list").addEventListener("click", async () => {
       document.getElementById("modal-canvas-list").classList.remove("hidden");
-      const grid = document.getElementById("odai-list-grid"); grid.innerHTML = "読み込み中...";
-      const snap = await getDocs(query(collection(db, "canvas_odai"), where("creatorUid", "==", currentUid), orderBy("createdAt", "desc")));
+      const grid = document.getElementById("odai-list-grid"); 
+      grid.innerHTML = "読み込み中...";
+      
+      const snap = await getDocs(query(
+        collection(db, "canvas_odai"), 
+        where("creatorUid", "==", currentUid), 
+        orderBy("createdAt", "desc")
+      ));
+      
       grid.innerHTML = "";
-      if(snap.empty) { grid.innerHTML = "投稿した問題がありません"; return; }
+      if(snap.empty) { 
+        grid.innerHTML = "投稿した問題がありません"; 
+        return; 
+      }
+      
       snap.forEach(d => {
-        const data = d.data(); const div = document.createElement("div"); div.className = "odai-card";
-        div.innerHTML = `<img src="${data.image}"><p>${data.word}</p>
-          <button style="background-color:${data.isPublic?'#28a745':'#666'}; padding:6px; font-size:12px;">${data.isPublic?'公開中':'非公開'}</button>`;
+        const data = d.data(); 
+        const div = document.createElement("div"); 
+        div.className = "odai-card";
+        div.innerHTML = `
+          <img src="${data.image}">
+          <p>${data.word}</p>
+          <button style="background-color:${data.isPublic?'#28a745':'#666'}; padding:6px; font-size:12px;">
+            ${data.isPublic?'公開中':'非公開'}
+          </button>
+        `;
         div.querySelector("button").addEventListener("click", async (e) => {
           await updateDoc(doc(db, "canvas_odai", d.id), { isPublic: !data.isPublic });
           e.target.textContent = !data.isPublic ? "公開中" : "非公開";
@@ -449,24 +800,214 @@
         grid.appendChild(div);
       });
     });
-    document.getElementById("btn-close-list-modal").addEventListener("click", () => document.getElementById("modal-canvas-list").classList.add("hidden"));
+
+    document.getElementById("btn-close-list-modal").addEventListener("click", () => {
+      document.getElementById("modal-canvas-list").classList.add("hidden");
+    });
+
+
+    // ==========================================
+    // フレンド＆招待関連ロジック
+    // ==========================================
+    document.getElementById("btn-to-friend").addEventListener("click", () => showScreen("friend-screen"));
+    document.getElementById("btn-friend-back").addEventListener("click", () => showScreen("menu-screen"));
+
+    function setupFriendsListener() {
+      if (unsubscribeFriends) unsubscribeFriends();
+      unsubscribeFriends = onSnapshot(doc(db, "users", currentUid), async (snapshot) => {
+        if (!snapshot.exists()) return;
+        const friendUids = snapshot.data().friends || [];
+        const fContainer = document.getElementById("friend-list-container");
+        
+        if (friendUids.length === 0) { 
+          fContainer.innerHTML = "<div class='friend-item'>フレンドはいません</div>"; 
+          return; 
+        }
+        
+        fContainer.innerHTML = "";
+        for (const fUid of friendUids) {
+          const fSnap = await getDoc(doc(db, "users", fUid));
+          if (fSnap.exists()) {
+            const fData = fSnap.data();
+            let isOnline = false;
+            if (fData.lastActive) {
+              const lastActiveTime = fData.lastActive.toDate().getTime();
+              const nowTime = new Date().getTime();
+              isOnline = (nowTime - lastActiveTime < 30000 || lastActiveTime > nowTime);
+            }
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "friend-item";
+            itemDiv.innerHTML = `
+              <div>👤 <span class="friend-name-link" id="link-${fData.uid}">${fData.username}</span>#${fData.userTag || "0000"}
+              <span class="status-badge ${isOnline ? 'status-online' : 'status-offline'}">${isOnline ? '● online' : '○ offline'}</span></div>
+            `;
+            if (isOnline) {
+              const btnGroup = document.createElement("div");
+              btnGroup.className = "btn-invite-group";
+              
+              const invitePaint = document.createElement("button");
+              invitePaint.className = "btn-invite"; 
+              invitePaint.textContent = "イラスト申込";
+              invitePaint.style.backgroundColor = "#ff9800";
+              invitePaint.addEventListener("click", () => sendMatchInvite(fData.uid, fData.username, "ohekaki"));
+              
+              btnGroup.appendChild(invitePaint);
+              itemDiv.appendChild(btnGroup);
+            }
+            fContainer.appendChild(itemDiv);
+          }
+        }
+      });
+    }
+
+    async function sendMatchInvite(targetUid, targetName, gameType) {
+      const mySnap = await getDoc(doc(db, "users", currentUid));
+      const myName = mySnap.exists() ? mySnap.data().username : "フレンド";
+      if (!confirm(`${targetName} さんに ${gameType} の対戦を申し込みますか？`)) return;
+
+      activeGameType = gameType;
+      let roomId = Math.floor(1000 + Math.random() * 9000).toString();
+      const colName = "paint_rooms";
+
+      let initialRoomObj = {
+        roomId, 
+        status: "waiting", 
+        players: [currentUid], 
+        drawer: currentUid, 
+        gamePhase: "drawing", 
+        answerWord: "", 
+        currentDrawing: "", 
+        score: { [currentUid]: 0 }, 
+        hintsUsedTotal: { [currentUid]: 0 }, 
+        hintsRevealedIndexes: [], 
+        finishReason: "", 
+        createdAt: serverTimestamp(), 
+        gameType
+      };
+      
+      await setDoc(doc(db, colName, roomId), initialRoomObj);
+
+      const inviteId = "INV_" + generateRoomId();
+      await setDoc(doc(db, "users", targetUid, "invites", inviteId), { 
+        roomId, hostName: myName, gameType, createdAt: new Date() 
+      });
+
+      activeRoomId = roomId;
+      document.getElementById("room-title-paint").textContent = "フレマッチ申込中"; 
+      document.getElementById("game-status-paint").textContent = `${targetName} が受けるのを待っています...`;
+      document.getElementById("btn-cancel-invite-paint").classList.remove("hidden"); 
+      document.getElementById("btn-leave-paint").classList.add("hidden"); 
+      
+      showScreen("game-screen-paint"); 
+      watchRoomPaint(roomId);
+    }
+
+    function setupInviteListener() {
+      if (unsubscribeInvite) unsubscribeInvite();
+      unsubscribeInvite = onSnapshot(collection(db, "users", currentUid, "invites"), (snapshot) => {
+        const inviteZone = document.getElementById("invite-notification-zone");
+        if (snapshot.empty) { 
+          inviteZone.classList.add("hidden"); 
+          return; 
+        }
+        
+        snapshot.docChanges().forEach(async (change) => {
+          if (change.type === "added") {
+            const inviteData = change.doc.data();
+            document.getElementById("invite-msg-text").textContent = `⚔️ ${inviteData.hostName} から対戦申し込みが届きました！`;
+            inviteZone.classList.remove("hidden");
+
+            document.getElementById("btn-accept-invite").onclick = async () => {
+              inviteZone.classList.add("hidden"); 
+              await deleteDoc(change.doc.ref);
+              
+              activeGameType = inviteData.gameType; 
+              activeRoomId = inviteData.roomId;
+              const roomRef = doc(db, "paint_rooms", activeRoomId);
+              const freshSnap = await getDoc(roomRef);
+              
+              if (!freshSnap.exists() || freshSnap.data().status === "finished") {
+                return alert("この招待は既に取り消されています。");
+              }
+
+              const rData = freshSnap.data();
+              let updateObj = { 
+                players: arrayUnion(currentUid), 
+                status: "playing", 
+                score: { ...rData.score, [currentUid]: 0 }, 
+                hintsUsedTotal: { ...rData.hintsUsedTotal, [currentUid]: 0 } 
+              };
+              
+              await updateDoc(roomRef, updateObj);
+              document.getElementById("btn-leave-paint").classList.remove("hidden"); 
+              showScreen("game-screen-paint"); 
+              watchRoomPaint(activeRoomId);
+            };
+            
+            document.getElementById("btn-decline-invite").onclick = async () => {
+              inviteZone.classList.add("hidden"); 
+              await deleteDoc(change.doc.ref);
+              await updateDoc(doc(db, "paint_rooms", inviteData.roomId), { 
+                status: "finished", finishReason: "辞退されました" 
+              });
+            };
+          }
+        });
+      });
+    }
+
+    document.getElementById("btn-add-friend").addEventListener("click", async () => {
+      const targetInput = document.getElementById("friend-search-input").value.trim();
+      if (!targetInput.includes("#")) return alert("形式（例: なまえ#1234）が正しくありません。");
+      
+      const [targetName, targetTag] = targetInput.split("#");
+      const q = query(collection(db, "users"), where("username", "==", targetName.trim()), where("userTag", "==", targetTag.trim()));
+      const snap = await getDocs(q);
+      
+      if (snap.empty) return alert("プレイヤーが見つかりません。");
+      
+      const targetUid = snap.docs[0].id;
+      if (targetUid === currentUid) return alert("自分自身は追加できません");
+      
+      await updateDoc(doc(db, "users", currentUid), { friends: arrayUnion(targetUid) });
+      alert("フレンドを追加しました！"); 
+      document.getElementById("friend-search-input").value = "";
+    });
+
 
     // ==========================================
     // グラフィックゲーム進行コア (Ohekaki, eShiritori, CanvasQuiz)
     // ==========================================
     const startMatch = async (type, isFree, inputId) => {
-      activeGameType = type; showScreen("game-screen-paint");
+      activeGameType = type; 
+      showScreen("game-screen-paint");
       document.getElementById("game-status-paint").textContent = "マッチング探索中...";
+      document.getElementById("btn-cancel-invite-paint").classList.add("hidden");
+      document.getElementById("btn-leave-paint").classList.remove("hidden");
 
       let consent = false;
-      if (type === "ohekaki") consent = document.getElementById("chk-record-ohekaki").checked;
+      if (type === "ohekaki") {
+        consent = document.getElementById("chk-record-ohekaki").checked;
+      }
 
       if (isFree) {
-        const snap = await getDocs(query(collection(db, "paint_rooms"), where("status", "==", "waiting"), where("gameType", "==", type)));
-        let t = null; snap.forEach(d => { if(!t && d.id.startsWith("FREE_")) t = d; });
+        const snap = await getDocs(query(
+          collection(db, "paint_rooms"), 
+          where("status", "==", "waiting"), 
+          where("gameType", "==", type)
+        ));
+        
+        let t = null; 
+        snap.forEach(d => { if(!t && d.id.startsWith("FREE_")) t = d; });
+        
         if(t) {
           activeRoomId = t.id;
-          await updateDoc(doc(db, "paint_rooms", activeRoomId), { players: arrayUnion(currentUid), status: "playing", [`score.${currentUid}`]:0, [`consentToRecord.${currentUid}`]: consent });
+          await updateDoc(doc(db, "paint_rooms", activeRoomId), { 
+            players: arrayUnion(currentUid), 
+            status: "playing", 
+            [`score.${currentUid}`]: 0, 
+            [`consentToRecord.${currentUid}`]: consent 
+          });
           return watchRoomPaint(activeRoomId);
         }
         activeRoomId = "FREE_" + Math.floor(1000+Math.random()*9000);
@@ -475,144 +1016,273 @@
         if(!isFree && inputId && !activeRoomId) return alert("部屋IDを入力してください");
       }
 
-      let initData = { roomId: activeRoomId, status: "waiting", players: [currentUid], drawer: currentUid, gamePhase: "drawing", answerWord: "", currentDrawing: "", score: { [currentUid]: 0 }, hintsUsedTotal: { [currentUid]: 0 }, consentToRecord: { [currentUid]: consent }, createdAt: serverTimestamp(), gameType: type };
+      let initData = { 
+        roomId: activeRoomId, 
+        status: "waiting", 
+        players: [currentUid], 
+        drawer: currentUid, 
+        gamePhase: "drawing", 
+        answerWord: "", 
+        currentDrawing: "", 
+        score: { [currentUid]: 0 }, 
+        hintsUsedTotal: { [currentUid]: 0 }, 
+        consentToRecord: { [currentUid]: consent }, 
+        createdAt: serverTimestamp(), 
+        gameType: type 
+      };
       
-      if (type === "eshiritori") initData.lastWord = "しりとり";
+      if (type === "eshiritori") {
+        initData.lastWord = "しりとり";
+      }
+      
       if (type === "canvas") {
         // キャンバスモードの場合、公開問題をDBから取得してキューを作る
         const qSnap = await getDocs(query(collection(db, "canvas_odai"), where("isPublic", "==", true)));
-        let ids = []; qSnap.forEach(d => ids.push(d.id));
-        if(ids.length === 0) { alert("公開されている問題が1つもありません"); return showScreen("menu-screen"); }
+        let ids = []; 
+        qSnap.forEach(d => ids.push(d.id));
+        
+        if(ids.length === 0) { 
+          alert("公開されている問題が1つもありません"); 
+          return showScreen("menu-screen"); 
+        }
+        
         ids = ids.sort(() => 0.5 - Math.random());
-        initData.quizQueue = ids; initData.quizIndex = 0; initData.gamePhase = "guessing"; // 最初から回答フェーズ
+        initData.quizQueue = ids; 
+        initData.quizIndex = 0; 
+        initData.gamePhase = "guessing"; // 最初から回答フェーズ
       }
       
       await setDoc(doc(db, "paint_rooms", activeRoomId), initData);
-      document.getElementById("room-title-paint").textContent = `部屋ID: ${activeRoomId}`; watchRoomPaint(activeRoomId);
+      document.getElementById("room-title-paint").textContent = `部屋ID: ${activeRoomId}`; 
+      watchRoomPaint(activeRoomId);
     };
 
+    // マッチングボタン イベント登録
     document.getElementById("btn-free-match-paint").addEventListener("click", () => startMatch("ohekaki", true));
     document.getElementById("btn-create-room-paint").addEventListener("click", () => startMatch("ohekaki", false));
+    document.getElementById("btn-join-room-paint").addEventListener("click", () => startMatch("ohekaki", false, "room-id-input-paint"));
+
     document.getElementById("btn-free-match-eshiritori").addEventListener("click", () => startMatch("eshiritori", true));
     document.getElementById("btn-create-room-eshiritori").addEventListener("click", () => startMatch("eshiritori", false));
+    document.getElementById("btn-join-room-eshiritori").addEventListener("click", () => startMatch("eshiritori", false, "room-id-input-eshiritori"));
+
     document.getElementById("btn-free-match-canvas").addEventListener("click", () => startMatch("canvas", true));
     document.getElementById("btn-create-room-canvas").addEventListener("click", () => startMatch("canvas", false));
 
+
     function watchRoomPaint(rId) {
-      if(unsubscribeRoomPaint) unsubscribeRoomPaint(); localCurrentPhase = ""; isHistorySaved = false; localLastGuessTime = 0;
+      if(unsubscribeRoomPaint) unsubscribeRoomPaint(); 
+      localCurrentPhase = ""; 
+      isHistorySaved = false; 
+      localLastGuessTime = 0;
+      
       unsubscribeRoomPaint = onSnapshot(doc(db, "paint_rooms", rId), async (snap) => {
         if(!snap.exists()) return;
-        const data = snap.data(); const targetGoal = data.gameType === "canvas" ? 15 : 3;
+        const data = snap.data(); 
+        
+        const targetGoal = data.gameType === "canvas" ? 15 : 3;
         document.getElementById("win-condition-text").textContent = `(${targetGoal}点先取)`;
         
-        // リアルタイム回答ログ表示の更新
+        // ★ リアルタイム回答ログ表示の更新 ★
         if (data.latestGuess && data.latestGuess.time !== localLastGuessTime) {
           localLastGuessTime = data.latestGuess.time;
-          const logBox = document.getElementById("guess-log-box"); const logTxt = document.getElementById("guess-log-text");
+          const logBox = document.getElementById("guess-log-box"); 
+          const logTxt = document.getElementById("guess-log-text");
+          
           logBox.classList.remove("hidden", "guess-correct", "guess-wrong");
           const n = data.latestGuess.uid === currentUid ? "あなた" : "相手";
+          
           if (data.latestGuess.isCorrect) {
-            logBox.classList.add("guess-correct"); logTxt.textContent = `🎉 ${n}の回答「${data.latestGuess.word}」 -> 正解！`;
+            logBox.classList.add("guess-correct"); 
+            logTxt.textContent = `🎉 ${n}の回答「${data.latestGuess.word}」 -> 正解！`;
           } else {
-            logBox.classList.add("guess-wrong"); logTxt.textContent = `❌ ${n}の回答「${data.latestGuess.word}」 -> ハズレ`;
+            logBox.classList.add("guess-wrong"); 
+            logTxt.textContent = `❌ ${n}の回答「${data.latestGuess.word}」 -> ハズレ`;
           }
         }
 
         if (data.status === "waiting") {
-          document.getElementById("game-status-paint").textContent = "相手の入室を待機中..."; document.getElementById("play-area-paint").classList.add("hidden");
+          document.getElementById("game-status-paint").textContent = "相手の入室を待機中..."; 
+          document.getElementById("play-area-paint").classList.add("hidden");
         } else if (data.status === "playing") {
-          document.getElementById("play-area-paint").classList.remove("hidden"); document.getElementById("game-status-paint").textContent = "ゲーム進行中";
+          document.getElementById("play-area-paint").classList.remove("hidden"); 
+          document.getElementById("game-status-paint").textContent = "ゲーム進行中";
+          
           const enemy = data.players.find(id => id !== currentUid) || "dummy";
           document.getElementById("score-my-paint").textContent = `あなた: ${data.score[currentUid]||0}点`;
           document.getElementById("score-enemy-paint").textContent = `相手: ${data.score[enemy]||0}点`;
 
           if (data.score[currentUid] >= targetGoal || data.score[enemy] >= targetGoal) {
-            if (data.players[0] === currentUid) await updateDoc(doc(db, "paint_rooms", rId), { status: "finished", finishReason: "点数条件達成", winnerUid: data.score[currentUid] >= targetGoal ? currentUid : enemy });
+            if (data.players[0] === currentUid) {
+              await updateDoc(doc(db, "paint_rooms", rId), { 
+                status: "finished", 
+                finishReason: "点数条件達成", 
+                winnerUid: data.score[currentUid] >= targetGoal ? currentUid : enemy 
+              });
+            }
             return;
           }
 
           // ★キャンバスモード（早押しクイズ）の特有処理
           if (data.gameType === "canvas") {
             if (data.quizIndex >= data.quizQueue.length) {
-              if(data.players[0] === currentUid) await updateDoc(doc(db, "paint_rooms", rId), { status: "finished", finishReason: "問題切れによる引き分け", winnerUid: "none" });
+              if(data.players[0] === currentUid) {
+                await updateDoc(doc(db, "paint_rooms", rId), { 
+                  status: "finished", 
+                  finishReason: "問題切れによる引き分け", 
+                  winnerUid: "none" 
+                });
+              }
               return;
             }
-            // 問題画像を引っ張ってくる
+            
+            // 問題画像をDBから引っ張ってくる
             const qDoc = await getDoc(doc(db, "canvas_odai", data.quizQueue[data.quizIndex]));
             if (qDoc.exists()) {
-              document.getElementById("role-indicator-paint").textContent = "画像を見て答えを早押し！"; document.getElementById("role-indicator-paint").className = "role-badge guesser-role";
-              document.getElementById("paint-canvas").classList.add("hidden"); document.getElementById("drawer-phase-control").classList.add("hidden"); document.getElementById("drawer-odai-input-zone").classList.add("hidden");
-              const dMon = document.getElementById("drawing-monitor"); dMon.classList.remove("hidden"); dMon.src = qDoc.data().image;
-              document.getElementById("guess-display-zone").classList.remove("hidden"); document.getElementById("guesser-input-zone").classList.remove("hidden");
-              document.getElementById("char-dots-wrapper").innerHTML = "早押し問題です！"; document.getElementById("hint-remaining-text").textContent = `第 ${data.quizIndex + 1} 問`;
+              document.getElementById("role-indicator-paint").textContent = "画像を見て答えを早押し！"; 
+              document.getElementById("role-indicator-paint").className = "role-badge guesser-role";
+              document.getElementById("paint-canvas").classList.add("hidden"); 
+              document.getElementById("drawer-phase-control").classList.add("hidden"); 
+              document.getElementById("drawer-odai-input-zone").classList.add("hidden");
+              
+              const dMon = document.getElementById("drawing-monitor"); 
+              dMon.classList.remove("hidden"); 
+              dMon.src = qDoc.data().image;
+              
+              document.getElementById("guess-display-zone").classList.remove("hidden"); 
+              document.getElementById("guesser-input-zone").classList.remove("hidden");
+              
+              document.getElementById("char-dots-wrapper").innerHTML = "早押し問題です！"; 
+              document.getElementById("hint-remaining-text").textContent = `第 ${data.quizIndex + 1} 問`;
             }
             return;
           }
 
           // ★通常モード（お絵描き＆絵しりとり）のフェーズ管理
           const isDrawer = data.drawer === currentUid;
+          
           if (data.gamePhase === "drawing") {
             isCanvasLocked = false;
             if (isDrawer) {
-              if (localCurrentPhase !== "drawing") { localCurrentPhase = "drawing"; ctxPlay.clearRect(0,0,canvasPlay.width,canvasPlay.height); }
+              if (localCurrentPhase !== "drawing") { 
+                localCurrentPhase = "drawing"; 
+                ctxPlay.clearRect(0,0,canvasPlay.width,canvasPlay.height); 
+              }
               document.getElementById("role-indicator-paint").textContent = data.gameType==="eshiritori" ? `絵を描いて！【前の単語: ${data.lastWord}】` : "あなたが絵を描く番です！";
               document.getElementById("role-indicator-paint").className = "role-badge drawer-role";
-              document.getElementById("paint-canvas").classList.remove("hidden"); document.getElementById("drawing-monitor").classList.add("hidden");
-              document.getElementById("drawer-phase-control").classList.remove("hidden"); document.getElementById("drawer-odai-input-zone").classList.add("hidden"); document.getElementById("guess-display-zone").classList.add("hidden");
-              ctxPlay.lineWidth = 4; ctxPlay.lineCap = "round"; ctxPlay.strokeStyle = "#333";
+              document.getElementById("paint-canvas").classList.remove("hidden"); 
+              document.getElementById("drawing-monitor").classList.add("hidden");
+              document.getElementById("drawer-phase-control").classList.remove("hidden"); 
+              document.getElementById("drawer-odai-input-zone").classList.add("hidden"); 
+              document.getElementById("guess-display-zone").classList.add("hidden");
+              
+              ctxPlay.lineWidth = 4; 
+              ctxPlay.lineCap = "round"; 
+              ctxPlay.strokeStyle = "#333";
             } else {
-              document.getElementById("role-indicator-paint").textContent = "相手がお絵描き中..."; document.getElementById("role-indicator-paint").className = "role-badge guesser-role";
-              document.getElementById("paint-canvas").classList.add("hidden"); document.getElementById("drawing-monitor").classList.remove("hidden");
-              document.getElementById("drawer-phase-control").classList.add("hidden"); document.getElementById("drawer-odai-input-zone").classList.add("hidden"); document.getElementById("guess-display-zone").classList.add("hidden");
+              document.getElementById("role-indicator-paint").textContent = "相手がお絵描き中..."; 
+              document.getElementById("role-indicator-paint").className = "role-badge guesser-role";
+              document.getElementById("paint-canvas").classList.add("hidden"); 
+              document.getElementById("drawing-monitor").classList.remove("hidden");
+              document.getElementById("drawer-phase-control").classList.add("hidden"); 
+              document.getElementById("drawer-odai-input-zone").classList.add("hidden"); 
+              document.getElementById("guess-display-zone").classList.add("hidden");
               document.getElementById("drawing-monitor").src = data.currentDrawing || "";
             }
           } else if (data.gamePhase === "naming") {
-            isCanvasLocked = true; localCurrentPhase = "naming";
+            isCanvasLocked = true; 
+            localCurrentPhase = "naming";
             if (isDrawer) {
               document.getElementById("odai-instruction-text").textContent = data.gameType==="eshiritori" ? `しりとりルールに従ってお題を入力（前の文字必須）` : "描いた絵の「お題」を入力（ひらがな）";
-              document.getElementById("role-indicator-paint").textContent = "お題の決定入力"; document.getElementById("role-indicator-paint").className = "role-badge drawer-role";
-              document.getElementById("drawer-phase-control").classList.add("hidden"); document.getElementById("drawer-odai-input-zone").classList.remove("hidden"); document.getElementById("guess-display-zone").classList.add("hidden");
+              document.getElementById("role-indicator-paint").textContent = "お題の決定入力"; 
+              document.getElementById("role-indicator-paint").className = "role-badge drawer-role";
+              document.getElementById("drawer-phase-control").classList.add("hidden"); 
+              document.getElementById("drawer-odai-input-zone").classList.remove("hidden"); 
+              document.getElementById("guess-display-zone").classList.add("hidden");
             } else {
-              document.getElementById("role-indicator-paint").textContent = "相手がお題を決定しています..."; document.getElementById("role-indicator-paint").className = "role-badge guesser-role";
+              document.getElementById("role-indicator-paint").textContent = "相手がお題を決定しています..."; 
+              document.getElementById("role-indicator-paint").className = "role-badge guesser-role";
             }
           } else if (data.gamePhase === "guessing") {
-            isCanvasLocked = true; localCurrentPhase = "guessing";
-            document.getElementById("drawer-phase-control").classList.add("hidden"); document.getElementById("drawer-odai-input-zone").classList.add("hidden"); document.getElementById("guess-display-zone").classList.remove("hidden");
+            isCanvasLocked = true; 
+            localCurrentPhase = "guessing";
+            document.getElementById("drawer-phase-control").classList.add("hidden"); 
+            document.getElementById("drawer-odai-input-zone").classList.add("hidden"); 
+            document.getElementById("guess-display-zone").classList.remove("hidden");
+            
             document.getElementById("char-dots-wrapper").innerHTML = "・".repeat(data.answerWord.length);
+            document.getElementById("hint-remaining-text").textContent = "答えを入力してください！";
+
             if (isDrawer) {
-              document.getElementById("role-indicator-paint").textContent = `相手が回答中... [答え: ${data.answerWord}]`; document.getElementById("role-indicator-paint").className = "role-badge drawer-role";
-              document.getElementById("guesser-input-zone").classList.add("hidden"); document.getElementById("paint-canvas").classList.remove("hidden"); document.getElementById("drawing-monitor").classList.add("hidden");
+              document.getElementById("role-indicator-paint").textContent = `相手が回答中... [答え: ${data.answerWord}]`; 
+              document.getElementById("role-indicator-paint").className = "role-badge drawer-role";
+              document.getElementById("guesser-input-zone").classList.add("hidden"); 
+              document.getElementById("paint-canvas").classList.remove("hidden"); 
+              document.getElementById("drawing-monitor").classList.add("hidden");
             } else {
-              document.getElementById("role-indicator-paint").textContent = "答えを当ててください！"; document.getElementById("role-indicator-paint").className = "role-badge guesser-role";
-              document.getElementById("guesser-input-zone").classList.remove("hidden"); document.getElementById("paint-canvas").classList.add("hidden"); document.getElementById("drawing-monitor").classList.remove("hidden");
+              document.getElementById("role-indicator-paint").textContent = "答えを当ててください！"; 
+              document.getElementById("role-indicator-paint").className = "role-badge guesser-role";
+              document.getElementById("guesser-input-zone").classList.remove("hidden"); 
+              document.getElementById("paint-canvas").classList.add("hidden"); 
+              document.getElementById("drawing-monitor").classList.remove("hidden");
               document.getElementById("drawing-monitor").src = data.currentDrawing;
             }
           }
         } else if (data.status === "finished") {
           alert(`ゲーム終了！\n理由: ${data.finishReason}`);
           if (!isHistorySaved && data.players[0] === currentUid) {
-            isHistorySaved = true; addDoc(collection(db, "histories"), { uids: data.players, winnerUid: data.winnerUid, reason: data.finishReason, gameType: data.gameType, timestamp: serverTimestamp() });
+            isHistorySaved = true; 
+            addDoc(collection(db, "histories"), { 
+              uids: data.players, 
+              winnerUid: data.winnerUid, 
+              reason: data.finishReason, 
+              gameType: data.gameType, 
+              timestamp: serverTimestamp() 
+            });
           }
           showScreen("menu-screen");
         }
       });
     }
 
-    // フェーズ進行と回答アクション
-    document.getElementById("btn-clear-canvas").addEventListener("click", async () => { ctxPlay.clearRect(0,0,canvasPlay.width,canvasPlay.height); await updateDoc(doc(db, "paint_rooms", activeRoomId), { currentDrawing: "" }); });
-    document.getElementById("btn-finish-drawing").addEventListener("click", async () => { await updateDoc(doc(db, "paint_rooms", activeRoomId), { currentDrawing: canvasPlay.toDataURL("image/webp", 0.3), gamePhase: "naming" }); });
+    // 各種アクションボタンのイベント
+    document.getElementById("btn-clear-canvas").addEventListener("click", async () => { 
+      ctxPlay.clearRect(0,0,canvasPlay.width,canvasPlay.height); 
+      await updateDoc(doc(db, "paint_rooms", activeRoomId), { currentDrawing: "" }); 
+    });
+    
+    document.getElementById("btn-finish-drawing").addEventListener("click", async () => { 
+      await updateDoc(doc(db, "paint_rooms", activeRoomId), { 
+        currentDrawing: canvasPlay.toDataURL("image/webp", 0.3), 
+        gamePhase: "naming" 
+      }); 
+    });
     
     document.getElementById("btn-submit-odai").addEventListener("click", async () => {
-      const v = document.getElementById("odai-input").value.trim(); if(!v||!isHiragana(v)) return alert("ひらがなで");
+      const v = document.getElementById("odai-input").value.trim(); 
+      if(!v || !isHiragana(v)) return alert("ひらがなでお題を入力してください");
+      
       const d = (await getDoc(doc(db, "paint_rooms", activeRoomId))).data();
-      if(d.gameType==="eshiritori" && v.charAt(0) !== (d.lastWord.slice(-1)==="ー"?d.lastWord.slice(-2,-1):d.lastWord.slice(-1))) return alert("しりとりが繋がっていません");
+      
+      if(d.gameType === "eshiritori") {
+        let req = d.lastWord.slice(-1);
+        if (req === "ー") req = d.lastWord.slice(-2, -1);
+        if (smallToLargeMap[req]) req = smallToLargeMap[req];
+        
+        if (v.charAt(0) !== req) return alert(`「${req}」から始まるお題にする必要があります！`);
+        if (v.slice(-1) === "ん") return alert("「ん」で終わるお題はダメです！");
+      }
+      
       await updateDoc(doc(db, "paint_rooms", activeRoomId), { answerWord: v, gamePhase: "guessing" });
       document.getElementById("odai-input").value = "";
     });
 
     document.getElementById("btn-submit-guess").addEventListener("click", async () => {
-      const a = document.getElementById("guess-input").value.trim(); if(!a) return;
-      const ref = doc(db, "paint_rooms", activeRoomId); const d = (await getDoc(ref)).data();
+      const a = document.getElementById("guess-input").value.trim(); 
+      if(!a) return;
+      
+      const ref = doc(db, "paint_rooms", activeRoomId); 
+      const d = (await getDoc(ref)).data();
       let isCorrect = false;
       
       // キャンバスモードの場合、問題DBから正解を取得
@@ -624,19 +1294,31 @@
       }
 
       // 回答ログの記録
-      await updateDoc(ref, { latestGuess: { uid: currentUid, word: a, isCorrect: isCorrect, time: Date.now() } });
+      await updateDoc(ref, { 
+        latestGuess: { uid: currentUid, word: a, isCorrect: isCorrect, time: Date.now() } 
+      });
 
       if (isCorrect) {
         let up = { [`score.${currentUid}`]: (d.score[currentUid]||0)+1 };
+        
         if (d.gameType === "canvas") {
           up.quizIndex = d.quizIndex + 1; // 次の問題へ
         } else {
-          // お絵描きモードの自動記録チェック
+          // お絵描きモードの自動記録（同意している場合）
           if (d.consentToRecord && d.consentToRecord[d.drawer]) {
-            await addDoc(collection(db, "canvas_odai"), { creatorUid: d.drawer, word: d.answerWord, image: d.currentDrawing, isPublic: true, createdAt: serverTimestamp() });
+            await addDoc(collection(db, "canvas_odai"), { 
+              creatorUid: d.drawer, 
+              word: d.answerWord, 
+              image: d.currentDrawing, 
+              isPublic: true, 
+              createdAt: serverTimestamp() 
+            });
           }
           const nextDrawer = d.players.find(id => id !== d.drawer);
-          up.gamePhase = "drawing"; up.drawer = nextDrawer; up.answerWord = ""; up.currentDrawing = "";
+          up.gamePhase = "drawing"; 
+          up.drawer = nextDrawer; 
+          up.answerWord = ""; 
+          up.currentDrawing = "";
           if(d.gameType === "eshiritori") up.lastWord = a;
         }
         await updateDoc(ref, up);
@@ -645,7 +1327,15 @@
     });
 
     document.getElementById("btn-leave-paint").addEventListener("click", async () => {
-      if(activeRoomId){ const s = await getDoc(doc(db,"paint_rooms",activeRoomId)); if(s.exists()&&s.data().status==="playing") await updateDoc(doc(db,"paint_rooms",activeRoomId), {status:"finished", finishReason:"退出"}); }
+      if(activeRoomId){ 
+        const s = await getDoc(doc(db,"paint_rooms",activeRoomId)); 
+        if(s.exists() && s.data().status === "playing") {
+          await updateDoc(doc(db,"paint_rooms",activeRoomId), {
+            status: "finished", 
+            finishReason: "退出"
+          }); 
+        }
+      }
       showScreen("menu-screen");
     });
   </script>
