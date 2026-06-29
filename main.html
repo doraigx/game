@@ -123,7 +123,7 @@
     .status-online { background-color: #e6f4ea; color: #137333; }
     .status-offline { background-color: #f1f3f4; color: #5f6368; }
     .btn-invite-group { display: flex; flex-direction: column; gap: 4px; }
-    .btn-invite { background-color: #34a853; font-size: 10px; padding: 4px 6px; width: auto; border-radius: 4px; }
+    .btn-invite { background-color: #34a853; font-size: 10px; padding: 4px 6px; width: auto; border-radius: 4px; color: white; border: none; cursor: pointer; }
     .invite-alert-box { background-color: #fff3cd; border: 2px dashed #ffc107; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #856404; text-align: left; }
 
     /* 戦績・履歴 */
@@ -138,7 +138,7 @@
     
     /* モード選択グリッド・タブ */
     .mode-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
-    .tab-btn { background-color: #e0e0e0; color: #333; padding: 10px 4px; border-radius: 6px; text-align: center; font-size: 12px; font-weight: bold; }
+    .tab-btn { background-color: #e0e0e0; color: #333; padding: 10px 4px; border-radius: 6px; text-align: center; font-size: 12px; font-weight: bold; border: none; cursor: pointer; }
     .tab-btn.active { background-color: #4285f4; color: white; }
 
     /* お題登録用プールUI */
@@ -397,7 +397,7 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // --- DOM要素の全取得（バグ回避のためスクリーントップで完全定義） ---
+    // --- DOM要素の全取得 ---
     const loadingStatus = document.getElementById("loading-status");
     const loginScreen = document.getElementById("login-screen");
     const registerScreen = document.getElementById("register-screen");
@@ -479,6 +479,9 @@
     let heartBeatInterval = null;
     let remainingTime = 15;
     let isHistorySaved = false;
+    let unsubscribeRoom = null;
+    let unsubscribeFriends = null;
+    let unsubscribeInvite = null;
 
     const ctx = canvas.getContext("2d");
     let isDrawing = false;
@@ -511,7 +514,6 @@
           gameModes[m].tab.classList.remove("active");
           gameModes[m].panel.classList.add("hidden");
         });
-        gameModes[mode].tab.add("active"); // classListのタイポ修正箇所
         gameModes[mode].tab.classList.add("active");
         gameModes[mode].panel.classList.remove("hidden");
         activeGameType = mode;
@@ -585,7 +587,7 @@
       heartBeatInterval = setInterval(() => runHeartbeatTick(selectMyStatus.value), 10000);
     }
 
-    // 試合履歴取得システム（ゲーム別分離 & もっと見る追加）
+    // 試合履歴取得システム
     let unsubscribeHistory = null;
     function loadGlobalHistory() {
       if (unsubscribeHistory) unsubscribeHistory();
@@ -598,7 +600,6 @@
       );
       
       unsubscribeHistory = onSnapshot(q, async (snap) => {
-        // 全体の総カウント計算（勝率用）
         const allSnap = await getDocs(query(collection(db, "histories"), where("uids", "array-contains", currentUid), where("gameType", "==", activeGameType)));
         let wins = 0; let losses = 0;
         allSnap.forEach(d => { if (d.data().winnerUid === currentUid) wins++; else losses++; });
@@ -771,10 +772,10 @@
       currentSentInviteId = inviteId; currentSentInviteTargetUid = targetUid; isFriendMatchMode = true; activeRoomId = roomId;
 
       if (gameType === "shiritori") {
-        roomTitle.textContent = "フレンドマッチ待機中"; gameStatus.textContent = `${targetName} さんの参加を受け付け中...`;
+        roomTitle.textContent = "フレマッチ待機中"; gameStatus.textContent = `${targetName} さんの参加を受け付け中...`;
         btnCancelInvite.classList.remove("hidden"); btnLeave.classList.add("hidden"); showScreen("game"); watchRoom(roomId);
       } else {
-        roomTitlePaint.textContent = "フレンドマッチ申込中"; gameStatusPaint.textContent = `${targetName} が受けるのを待っています...`;
+        roomTitlePaint.textContent = "フレマッチ申込中"; gameStatusPaint.textContent = `${targetName} が受けるのを待っています...`;
         btnCancelInvitePaint.classList.remove("hidden"); btnLeaveRoomPaint.classList.add("hidden"); showScreen("game-paint"); watchRoomPaint(roomId);
       }
     }
@@ -822,9 +823,7 @@
       });
     }
 
-    /* ==========================================================================
-       共通画面切り替えシステム
-       ========================================================================== */
+    // 画面切り替え共通関数
     function showScreen(type) {
       const screens = ["login-screen", "register-screen", "menu-screen", "friend-screen", "game-screen", "game-screen-paint"];
       screens.forEach(s => document.getElementById(s).classList.add("hidden"));
@@ -961,7 +960,6 @@
       await updateDoc(doc(db, "rooms", activeRoomId), { status: "finished", finishReason: "CANCELED" }); showScreen("menu");
     });
 
-
     /* ==========================================================================
        ②③④ グラフィックゲーム制御共通コア
        ========================================================================== */
@@ -992,7 +990,7 @@
         }
 
         let initialRoomObj = {
-          roomId: activeRoomId, status: isFree ? "waiting" : "waiting", players: [currentUid], drawer: currentUid, gamePhase: "drawing",
+          roomId: activeRoomId, status: "waiting", players: [currentUid], drawer: currentUid, gamePhase: "drawing",
           answerWord: "", currentDrawing: "", score: { [currentUid]: 0 }, hintsUsedTotal: { [currentUid]: 0 }, hintsRevealedIndexes: [],
           finishReason: "", createdAt: serverTimestamp(), gameType: type
         };
