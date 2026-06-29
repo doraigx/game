@@ -272,7 +272,7 @@
           <div class="game-card">
             <h3>📊 直近の勝敗履歴</h3>
             <div id="history-list-container">履歴はありません</div>
-            <button id="btn-history-more" style="margin-top: 12px; background-color: #666;" class="hidden">もっと見る</button>
+            <button id="btn-history-more" style="margin-top: 12px; background-color: #6c757d;" class="hidden">もっと見る</button>
           </div>
         </div>
       </div>
@@ -500,7 +500,7 @@
       return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
     };
 
-    // 各ゲームモードのタブシステム制御
+    // 各ゲームモードのタブシステム制御と履歴の分離
     const gameModes = {
       shiritori: { tab: document.getElementById("tab-shiritori"), panel: document.getElementById("panel-shiritori"), title: "🏆 ① しりとり累計戦績" },
       ohekaki: { tab: document.getElementById("tab-ohekaki"), panel: document.getElementById("panel-ohekaki"), title: "🏆 ② イラスト当て累計戦績" },
@@ -516,6 +516,8 @@
         });
         gameModes[mode].tab.classList.add("active");
         gameModes[mode].panel.classList.remove("hidden");
+        
+        // モードを切り替えたら、表示上限を5に戻して、そのモードの履歴だけをロード
         activeGameType = mode;
         historyLimitCount = 5; 
         document.getElementById("stats-title").textContent = gameModes[mode].title;
@@ -587,10 +589,12 @@
       heartBeatInterval = setInterval(() => runHeartbeatTick(selectMyStatus.value), 10000);
     }
 
-    // 試合履歴取得システム
+    // 試合履歴取得システム（「もっと見る」ボタン対応）
     let unsubscribeHistory = null;
     function loadGlobalHistory() {
       if (unsubscribeHistory) unsubscribeHistory();
+      
+      // activeGameType に一致する履歴だけを抽出
       const q = query(
         collection(db, "histories"),
         where("uids", "array-contains", currentUid),
@@ -600,13 +604,16 @@
       );
       
       unsubscribeHistory = onSnapshot(q, async (snap) => {
+        // 全件取得して勝敗をカウント
         const allSnap = await getDocs(query(collection(db, "histories"), where("uids", "array-contains", currentUid), where("gameType", "==", activeGameType)));
         let wins = 0; let losses = 0;
         allSnap.forEach(d => { if (d.data().winnerUid === currentUid) wins++; else losses++; });
         totalStatsText.textContent = `${wins}勝 ${losses}敗 (勝率 ${wins+losses>0?Math.round((wins/(wins+losses))*100):0}%)`;
 
         if (snap.empty) {
-          historyListContainer.innerHTML = "履歴はありません"; btnHistoryMore.classList.add("hidden"); return;
+          historyListContainer.innerHTML = "履歴はありません"; 
+          btnHistoryMore.classList.add("hidden"); 
+          return;
         }
 
         historyListContainer.innerHTML = "";
@@ -623,6 +630,7 @@
           historyListContainer.appendChild(card);
         });
 
+        // もし取得した総数が現在の表示上限より多ければ「もっと見る」ボタンを表示
         if (allSnap.size > historyLimitCount) {
           btnHistoryMore.classList.remove("hidden");
         } else {
@@ -632,7 +640,7 @@
     }
 
     btnHistoryMore.addEventListener("click", () => {
-      historyLimitCount += 5;
+      historyLimitCount += 5; // 5件追加
       loadGlobalHistory();
     });
 
@@ -805,6 +813,7 @@
                 btnLeave.classList.remove("hidden"); showScreen("game"); watchRoom(activeRoomId);
               } else {
                 let updateObj = { players: arrayUnion(currentUid), status: "playing", score: { ...rData.score, [currentUid]: 0 }, hintsUsedTotal: { ...rData.hintsUsedTotal, [currentUid]: 0 } };
+                // キャンバスモードの場合、受ける側のプールも合体させる
                 if (activeGameType === "canvas") {
                   const mySnap = await getDoc(doc(db, "users", currentUid));
                   updateObj.canvasMatchOdaiPool = arrayUnion(...(mySnap.data().canvasOdaiPool || ["ねこ"]));
@@ -1035,6 +1044,8 @@
       unsubscribeRoomPaint = onSnapshot(doc(db, "paint_rooms", roomId), async (snapshot) => {
         if (!snapshot.exists()) return;
         const data = snapshot.data(); currentRoomPlayers = data.players;
+        
+        // 勝利条件の表示
         const targetGoal = data.gameType === "canvas" ? 15 : 3;
         document.getElementById("win-condition-text").textContent = `(${targetGoal}点先取)`;
 
@@ -1046,6 +1057,7 @@
           scoreMyPaint.textContent = `あなた: ${data.score[currentUid]||0}点`;
           scoreEnemyPaint.textContent = `相手: ${data.score[enemy]||0}点`;
 
+          // 勝利条件（例：15点先取で勝ち）
           if (data.score[currentUid] >= targetGoal || data.score[enemy] >= targetGoal) {
             clearInterval(countdownInterval);
             if (data.drawer === currentUid) {
@@ -1054,6 +1066,7 @@
             } return;
           }
 
+          // キャンバスモード特有処理: naming(お題登録)フェーズを飛ばし、プールからランダム抽出して強制設定
           if (data.gameType === "canvas" && data.gamePhase === "drawing" && !data.answerWord && data.drawer === currentUid) {
             const pool = data.canvasMatchOdaiPool || ["りんご", "みかん"];
             const chosen = pool[Math.floor(Math.random() * pool.length)];
@@ -1082,6 +1095,7 @@
               drawingMonitor.src = data.currentDrawing || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
             }
           } else if (data.gamePhase === "naming") {
+            // キャンバスモードはnamingフェーズをスキップしてguessingに直行させる
             if (data.gameType === "canvas") {
               if (isDrawer) await updateDoc(doc(db, "paint_rooms", roomId), { gamePhase: "guessing" });
               return;
@@ -1090,6 +1104,7 @@
             manageLocalTimerPaint(data, 20); isCanvasLocked = true; localCurrentPhase = "naming";
             if (isDrawer) {
               let instruction = "描いた絵の「お題」を入力（ひらがな）";
+              // 絵しりとりモード特有の制限案内
               if (data.gameType === "eshiritori") {
                 let req = data.lastWord.slice(-1); if (req === "ー") req = data.lastWord.slice(-2, -1);
                 if (smallToLargeMap[req]) req = smallToLargeMap[req];
@@ -1176,6 +1191,7 @@
       if (!val || !isHiragana(val)) return alert("ひらがなでお題を決めてください");
       const ref = doc(db, "paint_rooms", activeRoomId); const rData = (await getDoc(ref)).data();
 
+      // 絵しりとりモード：描き手がしりとりのルールを守っているかチェック
       if (rData.gameType === "eshiritori") {
         let req = rData.lastWord.slice(-1); if (req === "ー") req = rData.lastWord.slice(-2, -1);
         if (smallToLargeMap[req]) req = smallToLargeMap[req];
@@ -1194,6 +1210,7 @@
       if (ans === rData.answerWord) {
         clearInterval(countdownInterval); countdownInterval = null; alert("正解！🎉");
         let updateData = { score: { ...rData.score, [currentUid]: (rData.score[currentUid]||0) + 1 } };
+        // 絵しりとりの場合は次の単語へと繋ぐ
         if (rData.gameType === "eshiritori") { updateData.lastWord = ans; }
         await updateDoc(ref, updateData);
         await navigateToNextDrawer(ref, rData);
