@@ -299,12 +299,6 @@
             <h3 id="stats-title">🏆 しりとり累計戦績</h3>
             <div class="stats-display" id="total-stats-text">0勝 0敗</div>
           </div>
-          
-          <!-- イラスト当てタブの時だけ表示されるキャンバス戦績カード -->
-          <div class="game-card hidden" id="stats-card-canvas">
-            <h3 id="stats-title-canvas">🏆 キャンバス累計戦績</h3>
-            <div class="stats-display" id="total-stats-text-canvas">0勝 0敗</div>
-          </div>
 
           <div class="game-card">
             <h3>📊 直近の勝敗履歴</h3>
@@ -583,10 +577,10 @@
     const generateUserTag = () => Math.floor(1000 + Math.random() * 9000).toString();
     const formatTimestamp = (ts) => { if(!ts) return "ーー/ーー ーー:ーー"; const d = ts.toDate(); return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
 
-    // ★ 数字を削除し、イラスト当てタブにはohekakiとcanvas両方のtypeを持たせる
+    // 数字を削除し、イラスト当てタブにはohekakiとcanvas両方のtypeを持たせる
     const gameModes = {
       shiritori: { tab: document.getElementById("tab-shiritori"), panel: document.getElementById("panel-shiritori"), title: "🏆 しりとり累計戦績", types: ["shiritori"] },
-      ohekaki: { tab: document.getElementById("tab-ohekaki"), panel: document.getElementById("panel-ohekaki"), title: "🏆 イラスト当て累計戦績", types: ["ohekaki", "canvas"] },
+      ohekaki: { tab: document.getElementById("tab-ohekaki"), panel: document.getElementById("panel-ohekaki"), title: "🏆 イラスト当て・キャンバス 累計戦績", types: ["ohekaki", "canvas"] },
       eshiritori: { tab: document.getElementById("tab-eshiritori"), panel: document.getElementById("panel-eshiritori"), title: "🏆 絵しりとり累計戦績", types: ["eshiritori"] }
     };
 
@@ -665,26 +659,14 @@
         ));
         
         let wins = 0; let losses = 0;
-        let canvasWins = 0; let canvasLosses = 0;
         
         allSnap.forEach(d => { 
           const data = d.data();
-          if (data.gameType === "canvas") {
-            if (data.winnerUid === currentUid) canvasWins++; else canvasLosses++;
-          } else {
-            if (data.winnerUid === currentUid) wins++; else losses++;
-          }
+          // キャンバスもイラスト当ても全て合算
+          if (data.winnerUid === currentUid) wins++; else losses++;
         });
         
         totalStatsText.textContent = `${wins}勝 ${losses}敗 (勝率 ${wins+losses>0?Math.round((wins/(wins+losses))*100):0}%)`;
-        
-        // ★ キャンバス履歴の表示制御（イラスト当てタブの時のみ表示）
-        if (activeGameType === "ohekaki") {
-          document.getElementById("stats-card-canvas").classList.remove("hidden");
-          document.getElementById("total-stats-text-canvas").textContent = `${canvasWins}勝 ${canvasLosses}敗 (勝率 ${canvasWins+canvasLosses>0?Math.round((canvasWins/(canvasWins+canvasLosses))*100):0}%)`;
-        } else {
-          document.getElementById("stats-card-canvas").classList.add("hidden");
-        }
         
         if (snap.empty) { historyListContainer.innerHTML = "履歴はありません"; btnHistoryMore.classList.add("hidden"); return; }
         
@@ -742,21 +724,35 @@
       const q = query(collection(db, "art_posts"), where("drawerUid", "==", currentUid), orderBy("createdAt", "desc"));
       const snap = await getDocs(q);
       if(snap.empty){ galleryListContainer.innerHTML = "投稿した作品はありません"; return; }
+      
       galleryListContainer.innerHTML = "";
       snap.forEach(d => {
         const art = d.data(); const item = document.createElement("div"); item.className = "gallery-item";
+        
         item.innerHTML = `
           <img src="${art.drawingData}" class="gallery-img">
           <div class="gallery-word">${art.answerWord}</div>
-          <button class="btn-toggle-public ${art.isPublic ? 'btn-public' : 'btn-private'}">${art.isPublic ? '🌐 公開中' : '🔒 非公開'}</button>
+          <div style="display: flex; gap: 4px; justify-content: center;">
+            <button class="btn-toggle-public ${art.isPublic ? 'btn-public' : 'btn-private'}" style="flex:1;">${art.isPublic ? '🌐 公開' : '🔒 非公開'}</button>
+            <button class="btn-delete-post" style="flex:1; background-color: #dc3545; color: white; padding: 4px; border-radius: 4px; font-size: 11px; border: none; cursor: pointer;">🗑️ 削除</button>
+          </div>
         `;
+        
         item.querySelector(".btn-toggle-public").addEventListener("click", async (e) => {
           const newStatus = !art.isPublic;
           await updateDoc(doc(db, "art_posts", d.id), { isPublic: newStatus });
           e.target.className = `btn-toggle-public ${newStatus ? 'btn-public' : 'btn-private'}`;
-          e.target.textContent = newStatus ? '🌐 公開中' : '🔒 非公開';
+          e.target.textContent = newStatus ? '🌐 公開' : '🔒 非公開';
           art.isPublic = newStatus;
         });
+        
+        item.querySelector(".btn-delete-post").addEventListener("click", async () => {
+          if (confirm(`「${art.answerWord}」の作品を完全に削除してもよろしいですか？`)) {
+            await deleteDoc(doc(db, "art_posts", d.id));
+            item.remove();
+          }
+        });
+        
         galleryListContainer.appendChild(item);
       });
     });
@@ -788,10 +784,8 @@
         const friendUids = snapshot.data().friends || [];
         if (friendUids.length === 0) { friendListContainer.innerHTML = "<div class='friend-item'>フレンドはいません</div>"; return; }
         
-        // ★フレンド重複表示バグ修正: 全てのフレンドデータを並列取得し、全て揃ってから1回だけDOMを描画する
         const friendSnaps = await Promise.all(friendUids.map(uid => getDoc(doc(db, "users", uid))));
         
-        // 描画直前にリセットすることで、非同期処理の競合によるリスト増殖を防ぐ
         friendListContainer.innerHTML = "";
         
         friendSnaps.forEach(fSnap => {
@@ -909,7 +903,6 @@
         if (!snapshot.exists()) return; const data = snapshot.data(); currentRoomPlayers = data.players;
         if (data.status === "waiting") { gameStatus.textContent = "対戦相手を待っています..."; shiritoriArea.classList.add("hidden"); clearInterval(countdownInterval); }
         else if (data.status === "playing") {
-          // ★ゲーム中は招待キャンセルボタンを非表示
           btnCancelInvite.classList.add("hidden");
           
           shiritoriArea.classList.remove("hidden"); gameStatus.textContent = "しりとり試合中！"; currentWord.textContent = data.lastWord;
@@ -943,7 +936,6 @@
       if (reqChar === "ー") reqChar = rData.lastWord.slice(-2, -1); 
       if (smallToLargeMap[reqChar]) reqChar = smallToLargeMap[reqChar];
       
-      // ★濁音・清音同一視判定
       const baseReq = getBaseChar(reqChar);
       const baseInput = getBaseChar(val.charAt(0));
       
@@ -1028,7 +1020,6 @@
         if (data.status === "waiting") {
           gameStatusPaint.textContent = "対戦相手の入室を待機中..."; playAreaPaint.classList.add("hidden"); clearInterval(countdownInterval);
         } else if (data.status === "playing") {
-          // ★ゲーム中は招待キャンセルボタンを非表示
           btnCancelInvitePaint.classList.add("hidden");
           
           playAreaPaint.classList.remove("hidden"); gameStatusPaint.textContent = `ゲーム進行中`;
@@ -1067,7 +1058,6 @@
             manageLocalTimerPaint(data, 20); isCanvasLocked = true; localCurrentPhase = "naming";
             if (isDrawer) {
               let instruction = "描いた絵の「お題」を入力（ひらがな）";
-              // ★濁音・清音の案内テキスト
               if (data.gameType === "eshiritori") {
                 let req = data.lastWord.slice(-1); 
                 if (req === "ー") req = data.lastWord.slice(-2, -1); 
@@ -1157,7 +1147,6 @@
       const val = odaiInput.value.trim(); if (!val || !isHiragana(val)) return alert("ひらがなでお題を決めてください");
       const ref = doc(db, "paint_rooms", activeRoomId); const rData = (await getDoc(ref)).data();
       
-      // ★絵しりとりモードの濁音・清音判定ロジック
       if (rData.gameType === "eshiritori") {
         let req = rData.lastWord.slice(-1); 
         if (req === "ー") req = rData.lastWord.slice(-2, -1); 
