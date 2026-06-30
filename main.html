@@ -137,7 +137,7 @@
     .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; justify-content:center; align-items:center; z-index:999; }
     
     /* モード選択グリッド・タブ */
-    .mode-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+    .mode-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px; }
     .tab-btn { background-color: #e0e0e0; color: #333; padding: 10px 4px; border-radius: 6px; text-align: center; font-size: 12px; font-weight: bold; border: none; cursor: pointer; }
     .tab-btn.active { background-color: #4285f4; color: white; }
 
@@ -181,6 +181,7 @@
       </div>
     </div>
 
+    <!-- 各種スクリーン定義 -->
     <div id="login-screen" class="game-card hidden" style="text-align: center;">
       <h1>マルチゲームポータル</h1>
       <p>ゲームを始めるにはGoogleアカウントでログインしてください。</p>
@@ -217,15 +218,15 @@
           </div>
 
           <div class="mode-tabs">
-            <button id="tab-shiritori" class="tab-btn active">① しりとり</button>
-            <button id="tab-ohekaki" class="tab-btn">② イラスト当て</button>
-            <button id="tab-eshiritori" class="tab-btn">③ 絵しりとり</button>
-            <button id="tab-canvas" class="tab-btn">④ キャンバス</button>
+            <button id="tab-shiritori" class="tab-btn active">しりとり</button>
+            <button id="tab-ohekaki" class="tab-btn">イラスト当て</button>
+            <button id="tab-eshiritori" class="tab-btn">絵しりとり</button>
           </div>
 
+          <!-- しりとりパネル -->
           <div id="panel-shiritori">
             <div class="game-card">
-              <h3>① しりとり：対戦モード</h3>
+              <h3>しりとり：対戦モード</h3>
               <button id="btn-create-room" style="background-color: #f4b400; margin-bottom: 16px;">新しく部屋を作る</button>
               <div class="flex-group">
                 <input type="text" id="room-id-input" placeholder="4桁の部屋ID" autocomplete="off">
@@ -233,20 +234,21 @@
               </div>
             </div>
             <div class="game-card">
-              <h3>① しりとり：フリーモード</h3>
+              <h3>しりとり：フリーモード</h3>
               <button id="btn-free" style="background-color: #34a853;">オートマッチング</button>
             </div>
           </div>
 
+          <!-- イラスト当て＆キャンバス統合パネル -->
           <div id="panel-ohekaki" class="hidden">
             <div class="game-card">
-              <h3>② イラスト当て設定</h3>
+              <h3>イラスト当て設定</h3>
               <label style="font-size: 13px; color: #444; display: block; margin-bottom: 10px; background: #fff3cd; padding: 8px; border-radius: 4px;">
                 <input type="checkbox" id="chk-record-consent" checked> ゲーム後に描いた絵と回答を、キャンバス用問題として共有DBに公開・記録する
               </label>
             </div>
             <div class="game-card">
-              <h3>② イラスト当て：対戦モード</h3>
+              <h3>通常イラスト当て：対戦モード</h3>
               <button id="btn-create-room-paint" style="background-color: #f4b400; margin-bottom: 16px;">新しく部屋を作る</button>
               <div class="flex-group">
                 <input type="text" id="room-id-input-paint" placeholder="4桁の部屋ID" autocomplete="off">
@@ -254,29 +256,13 @@
               </div>
             </div>
             <div class="game-card">
-              <h3>② イラスト当て：フリーモード</h3>
+              <h3>通常イラスト当て：フリーモード</h3>
               <button id="btn-free-match-paint" style="background-color: #34a853;">オートマッチング</button>
             </div>
-          </div>
 
-          <div id="panel-eshiritori" class="hidden">
+            <!-- 統合されたキャンバス機能 -->
             <div class="game-card">
-              <h3>③ 絵しりとり：対戦モード</h3>
-              <button id="btn-create-room-eshiritori" style="background-color: #f4b400; margin-bottom: 16px;">新しく部屋を作る</button>
-              <div class="flex-group">
-                <input type="text" id="room-id-input-eshiritori" placeholder="4桁の部屋ID" autocomplete="off">
-                <button id="btn-join-room-eshiritori">部屋に入る</button>
-              </div>
-            </div>
-            <div class="game-card">
-              <h3>③ 絵しりとり：フリーモード</h3>
-              <button id="btn-free-match-eshiritori" style="background-color: #34a853;">オートマッチング</button>
-            </div>
-          </div>
-
-          <div id="panel-canvas" class="hidden">
-            <div class="game-card">
-              <h3>④ キャンバス問題作成</h3>
+              <h3>オンラインキャンバス問題作成</h3>
               <p style="font-size: 12px; color: #666; margin-top: 0;">みんなが遊ぶための「イラストと答え」をDBに投稿します。</p>
               <div class="action-group" style="margin-bottom:10px;">
                 <button id="btn-open-post-modal" style="background-color: #9c27b0; font-size:14px; padding:10px;">作品を投稿する</button>
@@ -284,19 +270,42 @@
               </div>
             </div>
             <div class="game-card">
-              <h3>④ キャンバス：対戦モード</h3>
+              <h3>オンラインキャンバス：対戦モード</h3>
               <p style="font-size: 12px; color: #666; margin-top: 0;">共有DBから出題される問題を両者で早押し解答します！</p>
               <button id="btn-create-room-canvas" style="background-color: #f4b400; margin-bottom: 16px;">新しく部屋を作る</button>
               <button id="btn-free-match-canvas" style="background-color: #34a853;">オートマッチング（15pt先取）</button>
+            </div>
+          </div>
+
+          <!-- 絵しりとりパネル -->
+          <div id="panel-eshiritori" class="hidden">
+            <div class="game-card">
+              <h3>絵しりとり：対戦モード</h3>
+              <button id="btn-create-room-eshiritori" style="background-color: #f4b400; margin-bottom: 16px;">新しく部屋を作る</button>
+              <div class="flex-group">
+                <input type="text" id="room-id-input-eshiritori" placeholder="4桁の部屋ID" autocomplete="off">
+                <button id="btn-join-room-eshiritori">部屋に入る</button>
+              </div>
+            </div>
+            <div class="game-card">
+              <h3>絵しりとり：フリーモード</h3>
+              <button id="btn-free-match-eshiritori" style="background-color: #34a853;">オートマッチング</button>
             </div>
           </div>
         </div>
 
         <div class="pc-right-col">
           <div class="game-card">
-            <h3 id="stats-title">🏆 ① しりとり累計戦績</h3>
+            <h3 id="stats-title">🏆 しりとり累計戦績</h3>
             <div class="stats-display" id="total-stats-text">0勝 0敗</div>
           </div>
+          
+          <!-- イラスト当てタブの時だけ表示されるキャンバス戦績カード -->
+          <div class="game-card hidden" id="stats-card-canvas">
+            <h3 id="stats-title-canvas">🏆 キャンバス累計戦績</h3>
+            <div class="stats-display" id="total-stats-text-canvas">0勝 0敗</div>
+          </div>
+
           <div class="game-card">
             <h3>📊 直近の勝敗履歴</h3>
             <div id="history-list-container">履歴はありません</div>
@@ -306,6 +315,7 @@
       </div>
     </div>
 
+    <!-- 以降のゲームスクリーン・フレンドスクリーン -->
     <div id="friend-screen" class="hidden">
       <div class="card" style="text-align: center;">
         <h2>👥 フレンド・オンラインリスト</h2>
@@ -392,6 +402,7 @@
     </div>
   </div>
 
+  <!-- モーダル群 -->
   <div id="profile-modal" class="modal-overlay hidden">
     <div class="card" style="width: 90%; max-width: 350px; text-align: center;">
       <h2>👤 プロフィール</h2>
@@ -401,6 +412,7 @@
     </div>
   </div>
 
+  <!-- 作品投稿モーダル -->
   <div id="art-post-modal" class="modal-overlay hidden">
     <div class="card" style="width: 90%; max-width: 400px; text-align: center;">
       <h2>🎨 キャンバス問題を作成</h2>
@@ -423,11 +435,13 @@
     </div>
   </div>
 
+  <!-- 投稿作品一覧（ギャラリー）モーダル -->
   <div id="gallery-modal" class="modal-overlay hidden">
     <div class="card" style="width: 90%; max-width: 600px;">
       <h2 style="margin-bottom:10px;">📚 投稿作品一覧</h2>
       <div id="gallery-list-container" class="gallery-grid">
-        </div>
+        <!-- ギャラリーアイテムがここに入る -->
+      </div>
       <button id="btn-close-gallery" style="background-color: #888; margin-top: 15px;">閉じる</button>
     </div>
   </div>
@@ -517,7 +531,6 @@
     const btnCancelInvitePaint = document.getElementById("btn-cancel-invite-paint");
     const btnLeaveRoomPaint = document.getElementById("btn-leave-paint");
 
-    // ポスト関連DOM
     const chkRecordConsent = document.getElementById("chk-record-consent");
     const artPostModal = document.getElementById("art-post-modal");
     const postCanvas = document.getElementById("post-canvas");
@@ -553,23 +566,40 @@
     let isDrawing = false;
     let isPostDrawing = false;
     let isCanvasLocked = false;
+    
+    // しりとり用 文字変換・判定ロジック
     const smallToLargeMap = { 'ゃ': 'や', 'ゅ': 'ゆ', 'ょ': 'よ', 'っ': 'つ' };
+    const dakutenMap = {
+      'が':'か', 'ぎ':'き', 'ぐ':'く', 'げ':'け', 'ご':'こ',
+      'ざ':'さ', 'じ':'し', 'ず':'す', 'ぜ':'せ', 'ぞ':'そ',
+      'だ':'た', 'ぢ':'ち', 'づ':'つ', 'で':'て', 'ど':'と',
+      'ば':'は', 'び':'ひ', 'ぶ':'ふ', 'べ':'へ', 'ぼ':'ほ',
+      'ぱ':'は', 'ぴ':'ひ', 'ぷ':'ふ', 'ぺ':'へ', 'ぽ':'ほ'
+    };
+    function getBaseChar(char) { return dakutenMap[char] || char; }
+    
     function isHiragana(str) { return /^[ぁ-んー]+$/.test(str); }
     const generateRoomId = () => { let r=""; const c="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; for(let i=0;i<4;i++) r+=c.charAt(Math.floor(Math.random()*c.length)); return r; };
     const generateUserTag = () => Math.floor(1000 + Math.random() * 9000).toString();
     const formatTimestamp = (ts) => { if(!ts) return "ーー/ーー ーー:ーー"; const d = ts.toDate(); return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; };
 
+    // ★ 数字を削除し、イラスト当てタブにはohekakiとcanvas両方のtypeを持たせる
     const gameModes = {
-      shiritori: { tab: document.getElementById("tab-shiritori"), panel: document.getElementById("panel-shiritori"), title: "🏆 ① しりとり累計戦績" },
-      ohekaki: { tab: document.getElementById("tab-ohekaki"), panel: document.getElementById("panel-ohekaki"), title: "🏆 ② イラスト当て累計戦績" },
-      eshiritori: { tab: document.getElementById("tab-eshiritori"), panel: document.getElementById("panel-eshiritori"), title: "🏆 ③ 絵しりとり累計戦績" },
-      canvas: { tab: document.getElementById("tab-canvas"), panel: document.getElementById("panel-canvas"), title: "🏆 ④ キャンバス累計戦績" }
+      shiritori: { tab: document.getElementById("tab-shiritori"), panel: document.getElementById("panel-shiritori"), title: "🏆 しりとり累計戦績", types: ["shiritori"] },
+      ohekaki: { tab: document.getElementById("tab-ohekaki"), panel: document.getElementById("panel-ohekaki"), title: "🏆 イラスト当て累計戦績", types: ["ohekaki", "canvas"] },
+      eshiritori: { tab: document.getElementById("tab-eshiritori"), panel: document.getElementById("panel-eshiritori"), title: "🏆 絵しりとり累計戦績", types: ["eshiritori"] }
     };
+
     Object.keys(gameModes).forEach(mode => {
       gameModes[mode].tab.addEventListener("click", () => {
-        Object.keys(gameModes).forEach(m => { gameModes[m].tab.classList.remove("active"); gameModes[m].panel.classList.add("hidden"); });
-        gameModes[mode].tab.classList.add("active"); gameModes[mode].panel.classList.remove("hidden");
-        activeGameType = mode; historyLimitCount = 5; 
+        Object.keys(gameModes).forEach(m => { 
+          gameModes[m].tab.classList.remove("active"); 
+          gameModes[m].panel.classList.add("hidden"); 
+        });
+        gameModes[mode].tab.classList.add("active"); 
+        gameModes[mode].panel.classList.remove("hidden");
+        activeGameType = mode; 
+        historyLimitCount = 5; 
         document.getElementById("stats-title").textContent = gameModes[mode].title;
         loadGlobalHistory();
       });
@@ -616,16 +646,59 @@
     let unsubscribeHistory = null;
     function loadGlobalHistory() {
       if (unsubscribeHistory) unsubscribeHistory();
-      const q = query(collection(db, "histories"), where("uids", "array-contains", currentUid), where("gameType", "==", activeGameType), orderBy("timestamp", "desc"), limit(historyLimitCount));
+      
+      const activeTypes = gameModes[activeGameType].types;
+      
+      const q = query(
+        collection(db, "histories"), 
+        where("uids", "array-contains", currentUid), 
+        where("gameType", "in", activeTypes), 
+        orderBy("timestamp", "desc"), 
+        limit(historyLimitCount)
+      );
+      
       unsubscribeHistory = onSnapshot(q, async (snap) => {
-        const allSnap = await getDocs(query(collection(db, "histories"), where("uids", "array-contains", currentUid), where("gameType", "==", activeGameType)));
-        let wins = 0; let losses = 0; allSnap.forEach(d => { if (d.data().winnerUid === currentUid) wins++; else losses++; });
+        const allSnap = await getDocs(query(
+          collection(db, "histories"), 
+          where("uids", "array-contains", currentUid), 
+          where("gameType", "in", activeTypes)
+        ));
+        
+        let wins = 0; let losses = 0;
+        let canvasWins = 0; let canvasLosses = 0;
+        
+        allSnap.forEach(d => { 
+          const data = d.data();
+          if (data.gameType === "canvas") {
+            if (data.winnerUid === currentUid) canvasWins++; else canvasLosses++;
+          } else {
+            if (data.winnerUid === currentUid) wins++; else losses++;
+          }
+        });
+        
         totalStatsText.textContent = `${wins}勝 ${losses}敗 (勝率 ${wins+losses>0?Math.round((wins/(wins+losses))*100):0}%)`;
+        
+        // ★ キャンバス履歴の表示制御（イラスト当てタブの時のみ表示）
+        if (activeGameType === "ohekaki") {
+          document.getElementById("stats-card-canvas").classList.remove("hidden");
+          document.getElementById("total-stats-text-canvas").textContent = `${canvasWins}勝 ${canvasLosses}敗 (勝率 ${canvasWins+canvasLosses>0?Math.round((canvasWins/(canvasWins+canvasLosses))*100):0}%)`;
+        } else {
+          document.getElementById("stats-card-canvas").classList.add("hidden");
+        }
+        
         if (snap.empty) { historyListContainer.innerHTML = "履歴はありません"; btnHistoryMore.classList.add("hidden"); return; }
+        
         historyListContainer.innerHTML = "";
         snap.forEach(d => {
           const h = d.data(); const isWin = h.winnerUid === currentUid; const card = document.createElement("div"); card.className = "history-card";
-          card.innerHTML = `<span class="history-time">📅 ${formatTimestamp(h.timestamp)}</span> <span class="${isWin?'win-text':'lose-text'}">[${isWin?'WIN':'LOSE'}]</span> 完全決着<br><small style="color:#666">${h.reason || ''}</small>`;
+          
+          let typeLabel = "";
+          if (h.gameType === "shiritori") typeLabel = "しりとり";
+          else if (h.gameType === "ohekaki") typeLabel = "イラスト当て";
+          else if (h.gameType === "eshiritori") typeLabel = "絵しりとり";
+          else if (h.gameType === "canvas") typeLabel = "キャンバス";
+          
+          card.innerHTML = `<span class="history-time">📅 ${formatTimestamp(h.timestamp)} - ${typeLabel}</span> <span class="${isWin?'win-text':'lose-text'}">[${isWin?'WIN':'LOSE'}]</span> 完全決着<br><small style="color:#666">${h.reason || ''}</small>`;
           historyListContainer.appendChild(card);
         });
         if (allSnap.size > historyLimitCount) btnHistoryMore.classList.remove("hidden"); else btnHistoryMore.classList.add("hidden");
@@ -711,11 +784,17 @@
     function setupFriendsListener() {
       if (unsubscribeFriends) unsubscribeFriends();
       unsubscribeFriends = onSnapshot(doc(db, "users", currentUid), async (snapshot) => {
-        if (!snapshot.exists()) return; const friendUids = snapshot.data().friends || [];
+        if (!snapshot.exists()) return; 
+        const friendUids = snapshot.data().friends || [];
         if (friendUids.length === 0) { friendListContainer.innerHTML = "<div class='friend-item'>フレンドはいません</div>"; return; }
+        
+        // ★フレンド重複表示バグ修正: 全てのフレンドデータを並列取得し、全て揃ってから1回だけDOMを描画する
+        const friendSnaps = await Promise.all(friendUids.map(uid => getDoc(doc(db, "users", uid))));
+        
+        // 描画直前にリセットすることで、非同期処理の競合によるリスト増殖を防ぐ
         friendListContainer.innerHTML = "";
-        for (const fUid of friendUids) {
-          const fSnap = await getDoc(doc(db, "users", fUid));
+        
+        friendSnaps.forEach(fSnap => {
           if (fSnap.exists()) {
             const fData = fSnap.data(); let isOnline = false;
             if (fData.lastActive) { const la = fData.lastActive.toDate().getTime(); const now = new Date().getTime(); isOnline = (now - la < 30000 || la > now); }
@@ -727,9 +806,10 @@
               const invP = document.createElement("button"); invP.className = "btn-invite"; invP.textContent = "イラスト"; invP.style.background = "#ff9800"; invP.onclick = () => sendMatchInvite(fData.uid, fData.username, "ohekaki");
               btnGroup.appendChild(invS); btnGroup.appendChild(invP); itemDiv.appendChild(btnGroup);
             }
-            friendListContainer.appendChild(itemDiv); document.getElementById(`link-${fData.uid}`).addEventListener("click", () => showProfileModal(fData.uid, fData.username, fData.userTag));
+            friendListContainer.appendChild(itemDiv); 
+            document.getElementById(`link-${fData.uid}`).addEventListener("click", () => showProfileModal(fData.uid, fData.username, fData.userTag));
           }
-        }
+        });
       });
     }
 
@@ -803,8 +883,7 @@
     document.getElementById("btn-to-friend").addEventListener("click", () => showScreen("friend"));
     document.getElementById("btn-friend-back").addEventListener("click", () => showScreen("menu"));
 
-    // しりとり部分は省略せず既存維持
-    // [既存のしりとり関連コードブロック維持（省略なし）]
+    // しりとりゲーム
     document.getElementById("btn-free").addEventListener("click", async () => {
       activeGameType = "shiritori"; isFriendMatchMode = false; btnCancelInvite.classList.add("hidden"); btnLeave.classList.remove("hidden");
       gameStatus.textContent = "マッチ相手検索中..."; roomTitle.textContent = "オートマッチング"; showScreen("game");
@@ -823,12 +902,16 @@
       if (!snap.exists() || snap.data().status !== "waiting") return alert("入室できません"); activeRoomId = rId; roomTitle.textContent = `部屋ID: ${rId}`; showScreen("game");
       await updateDoc(doc(db, "rooms", rId), { players: arrayUnion(currentUid), shingiCounts: { ...snap.data().shingiCounts, [currentUid]: 0 }, status: "playing" }); watchRoom(rId);
     });
+
     function watchRoom(roomId) {
       if (unsubscribeRoom) unsubscribeRoom(); isHistorySaved = false;
       unsubscribeRoom = onSnapshot(doc(db, "rooms", roomId), (snapshot) => {
         if (!snapshot.exists()) return; const data = snapshot.data(); currentRoomPlayers = data.players;
         if (data.status === "waiting") { gameStatus.textContent = "対戦相手を待っています..."; shiritoriArea.classList.add("hidden"); clearInterval(countdownInterval); }
         else if (data.status === "playing") {
+          // ★ゲーム中は招待キャンセルボタンを非表示
+          btnCancelInvite.classList.add("hidden");
+          
           shiritoriArea.classList.remove("hidden"); gameStatus.textContent = "しりとり試合中！"; currentWord.textContent = data.lastWord;
           const myTurn = data.currentTurn === currentUid; turnIndicator.textContent = myTurn ? "あなたの番です！" : "相手の番です..."; turnIndicator.className = `turn-badge ${myTurn?'my-turn':'enemy-turn'}`;
           shiritoriInput.disabled = !myTurn; btnSendWord.disabled = !myTurn; btnShingi.disabled = !myTurn; shingiCounter.textContent = `審議残り: ${10 - (data.shingiCounts[currentUid]||0)}回`;
@@ -840,6 +923,7 @@
         }
       });
     }
+
     function startLocalTimer(roomData) {
       clearInterval(countdownInterval); remainingTime = 15;
       countdownInterval = setInterval(async () => {
@@ -847,11 +931,27 @@
         if (remainingTime <= 0) { clearInterval(countdownInterval); const isMyTurn = roomData.currentTurn === currentUid; const enemyUid = roomData.players.find(id => id !== currentUid); await updateDoc(doc(db, "rooms", activeRoomId), { status: "finished", winnerUid: isMyTurn ? enemyUid : currentUid, winnerName: isMyTurn ? "相手" : "あなた", finishReason: "時間切れ" }); }
       }, 1000);
     }
+
     async function handleShiritoriSend() {
-      let val = shiritoriInput.value.trim(); if (!val || !isHiragana(val)) return alert("ひらがなで入力"); const ref = doc(db, "rooms", activeRoomId); const rData = (await getDoc(ref)).data();
-      if (rData.usedWords.includes(val)) return alert("既出です");
-      let reqChar = rData.lastWord.slice(-1); if (reqChar === "ー") reqChar = rData.lastWord.slice(-2, -1); if (smallToLargeMap[reqChar]) reqChar = smallToLargeMap[reqChar];
-      if (reqChar !== val.charAt(0)) return alert(`「${reqChar}」から始まる単語を打ってください`);
+      let val = shiritoriInput.value.trim(); 
+      if (!val || !isHiragana(val)) return alert("ひらがなで入力してください"); 
+      const ref = doc(db, "rooms", activeRoomId); 
+      const rData = (await getDoc(ref)).data();
+      if (rData.usedWords.includes(val)) return alert("その単語は既出です");
+      
+      let reqChar = rData.lastWord.slice(-1); 
+      if (reqChar === "ー") reqChar = rData.lastWord.slice(-2, -1); 
+      if (smallToLargeMap[reqChar]) reqChar = smallToLargeMap[reqChar];
+      
+      // ★濁音・清音同一視判定
+      const baseReq = getBaseChar(reqChar);
+      const baseInput = getBaseChar(val.charAt(0));
+      
+      if (baseReq !== baseInput) {
+        let allowMsg = reqChar === baseReq ? `「${reqChar}」` : `「${reqChar}」か「${baseReq}」`;
+        return alert(`${allowMsg}から始まる単語を打ってください`);
+      }
+
       const enemy = rData.players.find(id => id !== currentUid);
       if (val.slice(-1) === "ん") { await updateDoc(ref, { status: "finished", winnerUid: enemy, winnerName: "相手", finishReason: "「ん」がつきました" }); return; }
       await updateDoc(ref, { lastWord: val, usedWords: arrayUnion(val), currentTurn: enemy }); shiritoriInput.value = "";
@@ -862,7 +962,7 @@
     btnLeave.addEventListener("click", async () => { if (activeRoomId) { const ref = doc(db, "rooms", activeRoomId); const s = await getDoc(ref); if (s.exists() && s.data().status === "playing") { await updateDoc(ref, { status: "finished", winnerUid: s.data().players.find(id => id !== currentUid), finishReason: "切断退出" }); } else if (s.exists()) { await deleteDoc(ref); } } showScreen("menu"); });
     btnCancelInvite.addEventListener("click", async () => { await deleteDoc(doc(db, "users", currentSentInviteTargetUid, "invites", currentSentInviteId)); await updateDoc(doc(db, "rooms", activeRoomId), { status: "finished", finishReason: "CANCELED" }); showScreen("menu"); });
 
-    // ②③④ グラフィックゲーム
+    // グラフィックゲーム
     const registerGraphicEvents = (btnId, panelInputId, isFree, type) => {
       document.getElementById(btnId).addEventListener("click", async () => {
         activeGameType = type; isFriendMatchMode = false; btnCancelInvitePaint.classList.add("hidden"); btnLeaveRoomPaint.classList.remove("hidden");
@@ -928,6 +1028,9 @@
         if (data.status === "waiting") {
           gameStatusPaint.textContent = "対戦相手の入室を待機中..."; playAreaPaint.classList.add("hidden"); clearInterval(countdownInterval);
         } else if (data.status === "playing") {
+          // ★ゲーム中は招待キャンセルボタンを非表示
+          btnCancelInvitePaint.classList.add("hidden");
+          
           playAreaPaint.classList.remove("hidden"); gameStatusPaint.textContent = `ゲーム進行中`;
           const enemy = data.players.find(id => id !== currentUid);
           scoreMyPaint.textContent = `あなた: ${data.score[currentUid]||0}点`; scoreEnemyPaint.textContent = `相手: ${data.score[enemy]||0}点`;
@@ -942,7 +1045,7 @@
           }
 
           const isDrawer = data.drawer === currentUid;
-          const isSystemDrawer = data.drawer === "system"; // キャンバスモード両者解答用
+          const isSystemDrawer = data.drawer === "system";
 
           if (data.gamePhase === "drawing") {
             manageLocalTimerPaint(data, 45); isCanvasLocked = false;
@@ -964,9 +1067,15 @@
             manageLocalTimerPaint(data, 20); isCanvasLocked = true; localCurrentPhase = "naming";
             if (isDrawer) {
               let instruction = "描いた絵の「お題」を入力（ひらがな）";
+              // ★濁音・清音の案内テキスト
               if (data.gameType === "eshiritori") {
-                let req = data.lastWord.slice(-1); if (req === "ー") req = data.lastWord.slice(-2, -1); if (smallToLargeMap[req]) req = smallToLargeMap[req];
-                instruction = `【しりとり】必ず「${req}」から始まるお題にしてください！`;
+                let req = data.lastWord.slice(-1); 
+                if (req === "ー") req = data.lastWord.slice(-2, -1); 
+                if (smallToLargeMap[req]) req = smallToLargeMap[req];
+                
+                const baseReq = getBaseChar(req);
+                let allowMsg = req === baseReq ? `「${req}」` : `「${req}」か「${baseReq}」`;
+                instruction = `【しりとり】必ず${allowMsg}から始まるお題にしてください！`;
               }
               document.getElementById("odai-instruction-text").textContent = instruction;
               roleIndicatorPaint.textContent = "フェーズ: お題の決定入力"; roleIndicatorPaint.className = "role-badge drawer-role";
@@ -978,7 +1087,6 @@
               drawerPhaseControl.classList.add("hidden"); drawerOdaiInputZone.classList.add("hidden"); guessDisplayZone.classList.add("hidden");
             }
           } else if (data.gamePhase === "guessing") {
-            // キャンバスモード以外はタイマーあり、キャンバスモードは無制限早押し
             if(!isSystemDrawer) manageLocalTimerPaint(data, 45); 
             else { clearInterval(countdownInterval); timerBoxPaint.textContent = `早押し解答！`; }
             isCanvasLocked = true; localCurrentPhase = "guessing";
@@ -1048,12 +1156,23 @@
     btnSubmitOdai.addEventListener("click", async () => {
       const val = odaiInput.value.trim(); if (!val || !isHiragana(val)) return alert("ひらがなでお題を決めてください");
       const ref = doc(db, "paint_rooms", activeRoomId); const rData = (await getDoc(ref)).data();
+      
+      // ★絵しりとりモードの濁音・清音判定ロジック
       if (rData.gameType === "eshiritori") {
-        let req = rData.lastWord.slice(-1); if (req === "ー") req = rData.lastWord.slice(-2, -1); if (smallToLargeMap[req]) req = smallToLargeMap[req];
-        if (val.charAt(0) !== req) return alert(`「${req}」から始まるお題にする必要があります！`); if (val.slice(-1) === "ん") return alert("「ん」で終わるお題はダメです！");
+        let req = rData.lastWord.slice(-1); 
+        if (req === "ー") req = rData.lastWord.slice(-2, -1); 
+        if (smallToLargeMap[req]) req = smallToLargeMap[req];
+        
+        const baseReq = getBaseChar(req);
+        const baseInput = getBaseChar(val.charAt(0));
+
+        if (baseReq !== baseInput) {
+          let allowMsg = req === baseReq ? `「${req}」` : `「${req}」か「${baseReq}」`;
+          return alert(`${allowMsg}から始まるお題にする必要があります！`); 
+        }
+        if (val.slice(-1) === "ん") return alert("「ん」で終わるお題はダメです！");
       }
       
-      // イラスト当て設定の「自動記録」同意がONの場合、作品を投稿する
       if (rData.gameType === "ohekaki" && chkRecordConsent.checked) {
         await addDoc(collection(db, "art_posts"), {
           drawerUid: currentUid, drawerName: currentUserName, drawingData: rData.currentDrawing,
@@ -1080,14 +1199,12 @@
         
         if (rData.gameType === "eshiritori") updateData.lastWord = ans;
         if (rData.gameType === "canvas") {
-          // キャンバスモードの場合、両者解答なので正解したら次の問題を引っ張ってくる
           const randArt = await getRandomPublicArt();
           if(randArt) {
             updateData.currentDrawing = randArt.drawingData;
             updateData.answerWord = randArt.answerWord;
-            updateData.hintsRevealedIndexes = []; // 次の問題のヒントリセット
+            updateData.hintsRevealedIndexes = []; 
           } else {
-            // 問題が枯渇した場合、強制終了
             updateData.status = "finished";
             updateData.finishReason = "出題可能な問題がなくなりました";
           }
