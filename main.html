@@ -921,7 +921,7 @@
       clearInterval(countdownInterval); remainingTime = 15;
       countdownInterval = setInterval(async () => {
         remainingTime--; timerBox.textContent = roomData.currentTurn === currentUid ? `残り時間: ${remainingTime}秒` : `相手の思考中... (${remainingTime}秒)`;
-        if (remainingTime <= 0) { clearInterval(countdownInterval); const isMyTurn = roomData.currentTurn === currentUid; const enemyUid = roomData.players.find(id => id !== currentUid); await updateDoc(doc(db, "rooms", activeRoomId), { status: "finished", winnerUid: isMyTurn ? enemyUid : currentUid, winnerName: isMyTurn ? "相手" : "あなた", finishReason: "時間切れ" }); }
+        if (remainingTime <= 0) { clearInterval(countdownInterval); const isMyTurn = roomData.currentTurn === currentUid; const enemyUid = roomData.players.find(id => id !== currentUid); await updateDoc(doc(db, "rooms", activeRoomId), { status: "finished", winnerUid: (isMyTurn ? enemyUid : currentUid) || null, winnerName: isMyTurn ? "相手" : "あなた", finishReason: "時間切れ" }); }
       }, 1000);
     }
 
@@ -951,7 +951,7 @@
     btnSendWord.addEventListener("click", handleShiritoriSend); shiritoriInput.addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) handleShiritoriSend(); });
     btnShingi.addEventListener("click", async () => { const ref = doc(db, "rooms", activeRoomId); const rData = (await getDoc(ref)).data(); const enemy = rData.players.find(id => id !== currentUid); let words = rData.usedWords; if (words.length > 1) words.pop(); await updateDoc(ref, { shingiCounts: { ...rData.shingiCounts, [currentUid]: (rData.shingiCounts[currentUid]||0)+1 }, currentTurn: enemy, lastWord: words[words.length-1]||"しりとり", usedWords: words }); });
     btnRetire.addEventListener("click", async () => { const enemy = currentRoomPlayers.find(id => id !== currentUid); await updateDoc(doc(db, "rooms", activeRoomId), { status: "finished", winnerUid: enemy, winnerName: "相手", finishReason: "リタイアしました" }); });
-    btnLeave.addEventListener("click", async () => { if (activeRoomId) { const ref = doc(db, "rooms", activeRoomId); const s = await getDoc(ref); if (s.exists() && s.data().status === "playing") { await updateDoc(ref, { status: "finished", winnerUid: s.data().players.find(id => id !== currentUid), finishReason: "切断退出" }); } else if (s.exists()) { await deleteDoc(ref); } } showScreen("menu"); });
+    btnLeave.addEventListener("click", async () => { if (activeRoomId) { const ref = doc(db, "rooms", activeRoomId); const s = await getDoc(ref); if (s.exists() && s.data().status === "playing") { await updateDoc(ref, { status: "finished",winnerUid: s.data().players.find(id => id !== currentUid) || null, finishReason: "切断退出" }); } else if (s.exists()) { await deleteDoc(ref); } } showScreen("menu"); });
     btnCancelInvite.addEventListener("click", async () => { await deleteDoc(doc(db, "users", currentSentInviteTargetUid, "invites", currentSentInviteId)); await updateDoc(doc(db, "rooms", activeRoomId), { status: "finished", finishReason: "CANCELED" }); showScreen("menu"); });
 
     // グラフィックゲーム
@@ -1030,8 +1030,8 @@
             clearInterval(countdownInterval);
             // 終了処理は一人が担当
             if (data.drawer === currentUid || (data.drawer === "system" && currentUid === currentRoomPlayers[0])) {
-              const winUid = data.score[currentUid] >= targetGoal ? currentUid : enemy;
-              await updateDoc(doc(db, "paint_rooms", roomId), { status: "finished", finishReason: "点数条件達成による決着", winnerUid: winUid });
+            const winUid = (data.score[currentUid] >= targetGoal ? currentUid : enemy) || null;
+            await updateDoc(doc(db, "paint_rooms", roomId), { status: "finished", finishReason: "点数条件達成による決着", winnerUid: winUid });
             } return;
           }
 
@@ -1133,10 +1133,10 @@
     }
 
     async function navigateToNextDrawer(roomRef, roomData) {
-      const next = roomData.players.find(id => id !== roomData.drawer);
-      await updateDoc(roomRef, { gamePhase: "drawing", drawer: next, answerWord: "", currentDrawing: "", hintsRevealedIndexes: [] });
-      clearInterval(countdownInterval); countdownInterval = null;
-    }
+  const next = roomData.players.find(id => id !== roomData.drawer) || null;
+  await updateDoc(roomRef, { gamePhase: "drawing", drawer: next, answerWord: "", currentDrawing: "", hintsRevealedIndexes: [] });
+  clearInterval(countdownInterval); countdownInterval = null;
+}
 
     btnFinishDrawing.addEventListener("click", async () => {
       clearInterval(countdownInterval); countdownInterval = null;
@@ -1227,7 +1227,7 @@
     function clearLocalCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
     btnClearCanvas.addEventListener("click", async () => { clearLocalCanvas(); await updateDoc(doc(db, "paint_rooms", activeRoomId), { currentDrawing: "" }); });
 
-    btnLeaveRoomPaint.addEventListener("click", async () => { if (activeRoomId) { const ref = doc(db, "paint_rooms", activeRoomId); const s = await getDoc(ref); if (s.exists() && s.data().status === "playing") { await updateDoc(ref, { status: "finished", winnerUid: s.data().players.find(id => id !== currentUid), finishReason: "相手が切断退出しました" }); } else if (s.exists()) { await deleteDoc(ref); } } showScreen("menu"); });
+    btnLeaveRoomPaint.addEventListener("click", async () => { if (activeRoomId) { const ref = doc(db, "paint_rooms", activeRoomId); const s = await getDoc(ref); if (s.exists() && s.data().status === "playing") { await updateDoc(ref, { status: "finished", winnerUid: s.data().players.find(id => id !== currentUid) || null, finishReason: "相手が切断退出しました" }); } else if (s.exists()) { await deleteDoc(ref); } } showScreen("menu"); });
     btnCancelInvitePaint.addEventListener("click", async () => { await deleteDoc(doc(db, "users", currentSentInviteTargetUid, "invites", currentSentInviteId)); await updateDoc(doc(db, "paint_rooms", activeRoomId), { status: "finished", finishReason: "CANCELED" }); showScreen("menu"); });
   </script>
 </body>
