@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>リポート管理ダッシュボード</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background-color: #f5f7fb; }
+    .report-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .report-meta { font-size: 12px; color: #666; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h1>管理ダッシュボード：リポート一覧</h1>
+  <div id="report-list">読み込み中...</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    
+    // ※ゲーム本体と同じ設定を使用してください
+    const firebaseConfig = {
+      apiKey: "AIzaSyCDh_z0Ol_Dc0wDz3e1NTAnUYVbF3AgQCw",
+      authDomain: "ohekaki.firebaseapp.com",
+      projectId: "ohekaki",
+      storageBucket: "ohekaki.firebasestorage.app",
+      messagingSenderId: "835719435378",
+      appId: "1:835719435378:web:6dccc98680a63e1f775eeb",
+      measurementId: "G-9TJ9SNFVX1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const listContainer = document.getElementById("report-list");
+
+    async function fetchReports() {
+      try {
+        // 新しい順に取得
+        const q = query(collection(db, "reports"), orderBy("timestamp", "desc"));
+        const snap = await getDocs(q);
+        
+        if (snap.empty) {
+          listContainer.innerHTML = "リポートはありません。";
+          return;
+        }
+
+        listContainer.innerHTML = "";
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const card = document.createElement("div");
+          card.className = "report-card";
+          
+          const dateStr = data.timestamp ? data.timestamp.toDate().toLocaleString() : "時刻不明";
+          
+          card.innerHTML = `
+            <div class="report-meta">
+              日時: ${dateStr} | 報告者: ${data.reporterName} (UID: ${data.reporterUid}) | 部屋ID: ${data.activeRoomId}
+            </div>
+            <div>${data.content}</div>
+          `;
+          listContainer.appendChild(card);
+        });
+      } catch (error) {
+        console.error("取得エラー:", error);
+        listContainer.innerHTML = "取得に失敗しました。管理者権限（UID）を確認してください。";
+      }
+    }
+
+    // 実行（※本来はここで管理者アカウントのログイン処理を挟む必要があります）
+    // 今回はFirebase側の認証状態を引き継ぐ想定で直接呼び出します
+    fetchReports();
+  </script>
+</body>
+</html>
