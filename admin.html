@@ -7,8 +7,6 @@
     body { font-family: sans-serif; padding: 20px; background-color: #f5f7fb; }
     .report-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .report-meta { font-size: 12px; color: #666; margin-bottom: 8px; }
-    
-    /* 追加: ログイン画面用のスタイル */
     #login-section { margin-bottom: 20px; text-align: center; margin-top: 50px; }
     button { padding: 10px 20px; background-color: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; }
     button:hover { background-color: #357ae8; }
@@ -31,7 +29,6 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    // 追加: 認証（ログイン）用のライブラリをインポート
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     
     const firebaseConfig = {
@@ -46,7 +43,6 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    // 追加: Authの初期化
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
@@ -55,7 +51,6 @@
     const listContainer = document.getElementById("report-list");
     const adminStatus = document.getElementById("admin-status");
 
-    // 追加: ログインボタンを押したときの処理
     document.getElementById("btn-admin-login").addEventListener("click", async () => {
       try {
         await signInWithPopup(auth, provider);
@@ -65,18 +60,14 @@
       }
     });
 
-    // 追加: ログイン状態を監視する処理
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // ログイン成功時：ログインボタンを隠してダッシュボードを表示
         loginSection.classList.add("hidden");
         dashboardSection.classList.remove("hidden");
-        adminStatus.textContent = `ログイン中: ${user.email} (UID: ${user.uid})`;
-        
-        // ログインが確認できてから初めてデータを取得しにいく
+        // UIDの表示を削除し、メールアドレスのみに変更
+        adminStatus.textContent = `ログイン中: ${user.email}`;
         fetchReports();
       } else {
-        // 未ログイン時：ログインボタンを表示
         loginSection.classList.remove("hidden");
         dashboardSection.classList.add("hidden");
       }
@@ -85,7 +76,7 @@
     async function fetchReports() {
       try {
         listContainer.innerHTML = "データを取得中...";
-        // 新しい順に取得
+        // 日時の新しい順（降順）で取得
         const q = query(collection(db, "reports"), orderBy("timestamp", "desc"));
         const snap = await getDocs(q);
         
@@ -102,9 +93,10 @@
           
           const dateStr = data.timestamp ? data.timestamp.toDate().toLocaleString() : "時刻不明";
           
+          // 各リポートカードのUID表示も削除
           card.innerHTML = `
             <div class="report-meta">
-              日時: ${dateStr} | 報告者: ${data.reporterName} (UID: ${data.reporterUid})<br>
+              日時: ${dateStr} | 報告者: ${data.reporterName}<br>
               部屋ID: ${data.activeRoomId}
             </div>
             <div style="white-space: pre-wrap;">${data.content}</div>
