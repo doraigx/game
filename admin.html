@@ -7,17 +7,33 @@
     body { font-family: sans-serif; padding: 20px; background-color: #f5f7fb; }
     .report-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .report-meta { font-size: 12px; color: #666; margin-bottom: 8px; }
+    
+    /* 追加: ログイン画面用のスタイル */
+    #login-section { margin-bottom: 20px; text-align: center; margin-top: 50px; }
+    button { padding: 10px 20px; background-color: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; }
+    button:hover { background-color: #357ae8; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
   <h1>管理ダッシュボード：リポート一覧</h1>
-  <div id="report-list">読み込み中...</div>
+  
+  <div id="login-section">
+    <p>管理者のGoogleアカウントでログインしてください。</p>
+    <button id="btn-admin-login">管理者ログイン</button>
+  </div>
+
+  <div id="dashboard-section" class="hidden">
+    <p id="admin-status" style="font-weight:bold; color:#137333;"></p>
+    <div id="report-list">読み込み中...</div>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    // 追加: 認証（ログイン）用のライブラリをインポート
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     
-    // ※ゲーム本体と同じ設定を使用してください
     const firebaseConfig = {
       apiKey: "AIzaSyCDh_z0Ol_Dc0wDz3e1NTAnUYVbF3AgQCw",
       authDomain: "ohekaki.firebaseapp.com",
@@ -30,10 +46,45 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    // 追加: Authの初期化
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const loginSection = document.getElementById("login-section");
+    const dashboardSection = document.getElementById("dashboard-section");
     const listContainer = document.getElementById("report-list");
+    const adminStatus = document.getElementById("admin-status");
+
+    // 追加: ログインボタンを押したときの処理
+    document.getElementById("btn-admin-login").addEventListener("click", async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        alert("ログインに失敗しました。");
+        console.error(error);
+      }
+    });
+
+    // 追加: ログイン状態を監視する処理
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // ログイン成功時：ログインボタンを隠してダッシュボードを表示
+        loginSection.classList.add("hidden");
+        dashboardSection.classList.remove("hidden");
+        adminStatus.textContent = `ログイン中: ${user.email} (UID: ${user.uid})`;
+        
+        // ログインが確認できてから初めてデータを取得しにいく
+        fetchReports();
+      } else {
+        // 未ログイン時：ログインボタンを表示
+        loginSection.classList.remove("hidden");
+        dashboardSection.classList.add("hidden");
+      }
+    });
 
     async function fetchReports() {
       try {
+        listContainer.innerHTML = "データを取得中...";
         // 新しい順に取得
         const q = query(collection(db, "reports"), orderBy("timestamp", "desc"));
         const snap = await getDocs(q);
@@ -53,21 +104,18 @@
           
           card.innerHTML = `
             <div class="report-meta">
-              日時: ${dateStr} | 報告者: ${data.reporterName} (UID: ${data.reporterUid}) | 部屋ID: ${data.activeRoomId}
+              日時: ${dateStr} | 報告者: ${data.reporterName} (UID: ${data.reporterUid})<br>
+              部屋ID: ${data.activeRoomId}
             </div>
-            <div>${data.content}</div>
+            <div style="white-space: pre-wrap;">${data.content}</div>
           `;
           listContainer.appendChild(card);
         });
       } catch (error) {
         console.error("取得エラー:", error);
-        listContainer.innerHTML = "取得に失敗しました。管理者権限（UID）を確認してください。";
+        listContainer.innerHTML = `<span style="color:red;">取得に失敗しました。</span><br>コンソールのエラーを確認してください。`;
       }
     }
-
-    // 実行（※本来はここで管理者アカウントのログイン処理を挟む必要があります）
-    // 今回はFirebase側の認証状態を引き継ぐ想定で直接呼び出します
-    fetchReports();
   </script>
 </body>
 </html>
