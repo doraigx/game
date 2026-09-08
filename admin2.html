@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>リポート・イラスト管理ダッシュボード</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background-color: #f5f7fb; }
+    .report-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .report-meta { font-size: 12px; color: #666; margin-bottom: 8px; }
+    #login-section { margin-bottom: 20px; text-align: center; margin-top: 50px; }
+    button { padding: 10px 20px; background-color: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; }
+    button:hover { background-color: #357ae8; }
+    .hidden { display: none !important; }
+
+    /* タブ切り替えスタイル */
+    .tab-bar { display: flex; gap: 10px; margin: 15px 0 20px 0; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+    .tab-btn { background-color: #e0e0e0; color: #333; font-size: 14px; padding: 8px 16px; border-radius: 6px; }
+    .tab-btn.active { background-color: #4285f4; color: white; }
+
+    /* イラストグリッド表示スタイル */
+    .art-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .art-card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+    }
+    .art-img-wrap {
+      width: 100%;
+      height: 180px;
+      background-color: #eee;
+      overflow: hidden;
+    }
+    .art-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      cursor: pointer;
+      background-color: #fafafa;
+    }
+    .art-info {
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+    .art-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: #333;
+    }
+    .art-meta {
+      font-size: 11px;
+      color: #777;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <h1>管理ダッシュボード</h1>
+  
+  <div id="login-section">
+    <p>管理者のGoogleアカウントでログインしてください。</p>
+    <button id="btn-admin-login">管理者ログイン</button>
+  </div>
+
+  <div id="dashboard-section" class="hidden">
+    <p id="admin-status" style="font-weight:bold; color:#137333;"></p>
+
+    <!-- タブ切り替えボタン -->
+    <div class="tab-bar">
+      <button id="tab-btn-reports" class="tab-btn active">リポート一覧</button>
+      <button id="tab-btn-arts" class="tab-btn">みんなのイラスト一覧</button>
+    </div>
+
+    <!-- リポート一覧エリア -->
+    <div id="tab-content-reports">
+      <h2>通報・リポート</h2>
+      <div id="report-list">読み込み中...</div>
+    </div>
+
+    <!-- イラスト一覧エリア -->
+    <div id="tab-content-arts" class="hidden">
+      <h2>投稿されたイラスト</h2>
+      <div id="art-list" class="art-grid">読み込み中...</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyCDh_z0Ol_Dc0wDz3e1NTAnUYVbF3AgQCw",
+      authDomain: "ohekaki.firebaseapp.com",
+      projectId: "ohekaki",
+      storageBucket: "ohekaki.firebasestorage.app",
+      messagingSenderId: "835719435378",
+      appId: "1:835719435378:web:6dccc98680a63e1f775eeb",
+      measurementId: "G-9TJ9SNFVX1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const loginSection = document.getElementById("login-section");
+    const dashboardSection = document.getElementById("dashboard-section");
+    const adminStatus = document.getElementById("admin-status");
+
+    const tabBtnReports = document.getElementById("tab-btn-reports");
+    const tabBtnArts = document.getElementById("tab-btn-arts");
+    const tabContentReports = document.getElementById("tab-content-reports");
+    const tabContentArts = document.getElementById("tab-content-arts");
+
+    const reportListContainer = document.getElementById("report-list");
+    const artListContainer = document.getElementById("art-list");
+
+    // タブ切り替え処理
+    tabBtnReports.addEventListener("click", () => {
+      tabBtnReports.classList.add("active");
+      tabBtnArts.classList.remove("active");
+      tabContentReports.classList.remove("hidden");
+      tabContentArts.classList.add("hidden");
+    });
+
+    tabBtnArts.addEventListener("click", () => {
+      tabBtnArts.classList.add("active");
+      tabBtnReports.classList.remove("active");
+      tabContentArts.classList.remove("hidden");
+      tabContentReports.classList.add("hidden");
+      fetchArts(); // イラストタブを押した際に最新を取得
+    });
+
+    document.getElementById("btn-admin-login").addEventListener("click", async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        alert("ログインに失敗しました。");
+        console.error(error);
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginSection.classList.add("hidden");
+        dashboardSection.classList.remove("hidden");
+        adminStatus.textContent = `ログイン中: ${user.email}`;
+        fetchReports();
+      } else {
+        loginSection.classList.remove("hidden");
+        dashboardSection.classList.add("hidden");
+      }
+    });
+
+    // リポート一覧の取得
+    async function fetchReports() {
+      try {
+        reportListContainer.innerHTML = "データを取得中...";
+        const q = query(collection(db, "reports"), orderBy("timestamp", "desc"));
+        const snap = await getDocs(q);
+        
+        if (snap.empty) {
+          reportListContainer.innerHTML = "リポートはありません。";
+          return;
+        }
+
+        reportListContainer.innerHTML = "";
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const card = document.createElement("div");
+          card.className = "report-card";
+          
+          const dateStr = data.timestamp ? data.timestamp.toDate().toLocaleString() : "時刻不明";
+          
+          card.innerHTML = `
+            <div class="report-meta">
+              日時: ${dateStr} | 報告者: ${data.reporterName || "名無し"}<br>
+              部屋ID: ${data.activeRoomId || "-"}
+            </div>
+            <div style="white-space: pre-wrap;">${data.content || ""}</div>
+          `;
+          reportListContainer.appendChild(card);
+        });
+      } catch (error) {
+        console.error("リポート取得エラー:", error);
+        reportListContainer.innerHTML = `<span style="color:red;">取得に失敗しました。</span>`;
+      }
+    }
+
+    // イラスト一覧の取得 (art_posts コレクション)
+    async function fetchArts() {
+      try {
+        artListContainer.innerHTML = "イラストを取得中...";
+        
+        // 日時フィールド（createdAt または timestamp）に対応
+        let snap;
+        try {
+          const q = query(collection(db, "art_posts"), orderBy("createdAt", "desc"));
+          snap = await getDocs(q);
+        } catch (e) {
+          // createdAt でのソートに失敗した場合は並び替えなしで全件取得
+          snap = await getDocs(collection(db, "art_posts"));
+        }
+
+        if (snap.empty) {
+          artListContainer.innerHTML = "<p>投稿されたイラストはまだありません。</p>";
+          return;
+        }
+
+        artListContainer.innerHTML = "";
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const card = document.createElement("div");
+          card.className = "art-card";
+
+          // 画像URLプロパティの揺れに対応 (imageUrl, url, imagePath, dataURL など)
+          const imgUrl = data.imageUrl || data.url || data.imagePath || data.dataURL || "";
+          
+          // 日時プロパティの揺れに対応
+          const timeField = data.createdAt || data.timestamp;
+          const dateStr = timeField && typeof timeField.toDate === "function" 
+            ? timeField.toDate().toLocaleString() 
+            : "";
+
+          const author = data.authorName || data.userName || data.creatorName || "名無し";
+          const title = data.title || "無題";
+
+          card.innerHTML = `
+            <div class="art-img-wrap">
+              ${imgUrl ? `<a href="${imgUrl}" target="_blank" rel="noopener noreferrer"><img src="${imgUrl}" alt="${title}" loading="lazy" /></a>` : '<div style="padding:20px;text-align:center;color:#999;">画像なし</div>'}
+            </div>
+            <div class="art-info">
+              <div class="art-title">${title}</div>
+              <div class="art-meta">
+                作者: ${author}<br>
+                ${dateStr ? `日時: ${dateStr}` : ""}
+              </div>
+            </div>
+          `;
+          artListContainer.appendChild(card);
+        });
+      } catch (error) {
+        console.error("イラスト取得エラー:", error);
+        artListContainer.innerHTML = `<span style="color:red;">イラスト一覧の取得に失敗しました。</span><br>Firestoreの権限（Rules）やインデックスを確認してください。`;
+      }
+    }
+  </script>
+</body>
+</html>
