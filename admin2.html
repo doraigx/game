@@ -20,7 +20,7 @@
     /* イラスト一覧グリッド */
     .art-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
       gap: 16px;
     }
     .art-card {
@@ -49,18 +49,27 @@
       background-color: #fff;
     }
     .art-info {
-      padding: 10px 12px;
+      padding: 12px;
       font-size: 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
-    .art-title {
+    .art-answer {
       font-weight: bold;
-      margin-bottom: 4px;
-      color: #333;
+      font-size: 15px;
+      color: #1a73e8;
+      word-break: break-all;
     }
-    .art-meta {
-      font-size: 11px;
-      color: #777;
+    .art-meta-item {
+      font-size: 12px;
+      color: #555;
       line-height: 1.4;
+    }
+    .art-label {
+      font-weight: bold;
+      color: #777;
+      margin-right: 4px;
     }
 
     /* 画像拡大モーダル */
@@ -233,7 +242,7 @@
           const q = query(collection(db, "art_posts"), orderBy("createdAt", "desc"));
           snap = await getDocs(q);
         } catch (e) {
-          // インデックス未作成等の場合は並び替えなしでフォールバック
+          // createdAtのインデックスが無い場合などは並び替えなしで全件取得
           snap = await getDocs(collection(db, "art_posts"));
         }
 
@@ -246,14 +255,10 @@
         snap.forEach(docSnap => {
           const data = docSnap.data();
 
-          // ログで各ドキュメントの中身を確認できるように出力
-          console.log("取得したart_postデータ:", docSnap.id, data);
-
-          // 画像データを探す（Base64 / URLの各フィールド名、あるいは "data:image" で始まる文字列を自動検出）
+          // 画像データを探す（data:image または http 形式の文字列）
           let imgData = data.artData || data.canvasData || data.image || data.imageData || 
                         data.imageUrl || data.url || data.dataUrl || data.dataURL || "";
 
-          // プロパティ名が一致しない場合、data:image または http で始まる値を自動検索
           if (!imgData) {
             for (const key in data) {
               if (typeof data[key] === "string" && (data[key].startsWith("data:image") || data[key].startsWith("http"))) {
@@ -263,19 +268,30 @@
             }
           }
 
-          const timeField = data.createdAt || data.timestamp || data.updatedAt;
-          const dateStr = timeField && typeof timeField.toDate === "function" 
-            ? timeField.toDate().toLocaleString() 
-            : "";
+          // 1. お題・答え (answerWord)
+          const answer = data.answerWord || data.word || data.theme || data.title || "（答えなし）";
 
-          const author = data.authorName || data.userName || data.creatorName || data.name || "名無し";
-          const title = data.title || "無題";
+          // 2. 書いた人 (drawerName)
+          const drawer = data.drawerName || data.authorName || data.userName || data.creatorName || "名無し";
+
+          // 3. 作成日時 (createdAt)
+          const timeField = data.createdAt || data.timestamp;
+          let dateStr = "日時不明";
+          if (timeField) {
+            if (typeof timeField.toDate === "function") {
+              dateStr = timeField.toDate().toLocaleString();
+            } else if (timeField instanceof Date) {
+              dateStr = timeField.toLocaleString();
+            } else if (typeof timeField === "number" || typeof timeField === "string") {
+              dateStr = new Date(timeField).toLocaleString();
+            }
+          }
 
           const card = document.createElement("div");
           card.className = "art-card";
 
           const imgHtml = imgData
-            ? `<img src="${imgData}" alt="${title}" loading="lazy" class="clickable-art" />`
+            ? `<img src="${imgData}" alt="${answer}" loading="lazy" class="clickable-art" />`
             : `<div style="padding:20px;text-align:center;color:#999;font-size:12px;">画像データなし</div>`;
 
           card.innerHTML = `
@@ -283,15 +299,13 @@
               ${imgHtml}
             </div>
             <div class="art-info">
-              <div class="art-title">${title}</div>
-              <div class="art-meta">
-                作者: ${author}<br>
-                ${dateStr ? `日時: ${dateStr}` : ""}
-              </div>
+              <div class="art-answer">🎨 答え: ${answer}</div>
+              <div class="art-meta-item"><span class="art-label">描いた人:</span>${drawer}</div>
+              <div class="art-meta-item"><span class="art-label">作成日時:</span>${dateStr}</div>
             </div>
           `;
 
-          // 画像クリックでポップアップ拡大
+          // 画像クリックで拡大モーダル表示
           if (imgData) {
             const imgEl = card.querySelector(".clickable-art");
             imgEl.addEventListener("click", () => {
