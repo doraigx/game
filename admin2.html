@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>リポート・イラスト管理ダッシュボード</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; background-color: #f5f7fb; }
+    body { font-family: sans-serif; padding: 20px; background-color: #f5f7fb; margin: 0; }
     .report-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .report-meta { font-size: 12px; color: #666; margin-bottom: 8px; }
     #login-section { margin-bottom: 20px; text-align: center; margin-top: 50px; }
@@ -12,12 +12,12 @@
     button:hover { background-color: #357ae8; }
     .hidden { display: none !important; }
 
-    /* タブ切り替えスタイル */
+    /* タブバー */
     .tab-bar { display: flex; gap: 10px; margin: 15px 0 20px 0; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-    .tab-btn { background-color: #e0e0e0; color: #333; font-size: 14px; padding: 8px 16px; border-radius: 6px; }
+    .tab-btn { background-color: #e0e0e0; color: #333; font-size: 14px; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; }
     .tab-btn.active { background-color: #4285f4; color: white; }
 
-    /* イラストグリッド表示スタイル */
+    /* イラスト一覧グリッド */
     .art-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -33,17 +33,20 @@
     }
     .art-img-wrap {
       width: 100%;
-      height: 180px;
-      background-color: #eee;
+      height: 200px;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
     }
     .art-img-wrap img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      display: block;
       cursor: pointer;
-      background-color: #fafafa;
+      display: block;
+      background-color: #fff;
     }
     .art-info {
       padding: 10px 12px;
@@ -58,6 +61,24 @@
       font-size: 11px;
       color: #777;
       line-height: 1.4;
+    }
+
+    /* 画像拡大モーダル */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .modal-img {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 6px;
+      background: white;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     }
   </style>
 </head>
@@ -78,17 +99,22 @@
       <button id="tab-btn-arts" class="tab-btn">みんなのイラスト一覧</button>
     </div>
 
-    <!-- リポート一覧エリア -->
+    <!-- リポート一覧 -->
     <div id="tab-content-reports">
       <h2>通報・リポート</h2>
       <div id="report-list">読み込み中...</div>
     </div>
 
-    <!-- イラスト一覧エリア -->
+    <!-- イラスト一覧 -->
     <div id="tab-content-arts" class="hidden">
       <h2>投稿されたイラスト</h2>
       <div id="art-list" class="art-grid">読み込み中...</div>
     </div>
+  </div>
+
+  <!-- 画像拡大モーダル -->
+  <div id="img-modal" class="modal-overlay hidden" onclick="this.classList.add('hidden')">
+    <img id="modal-image" class="modal-img" src="" alt="拡大画像" />
   </div>
 
   <script type="module">
@@ -123,7 +149,10 @@
     const reportListContainer = document.getElementById("report-list");
     const artListContainer = document.getElementById("art-list");
 
-    // タブ切り替え処理
+    const imgModal = document.getElementById("img-modal");
+    const modalImage = document.getElementById("modal-image");
+
+    // タブ切り替え
     tabBtnReports.addEventListener("click", () => {
       tabBtnReports.classList.add("active");
       tabBtnArts.classList.remove("active");
@@ -136,7 +165,7 @@
       tabBtnReports.classList.remove("active");
       tabContentArts.classList.remove("hidden");
       tabContentReports.classList.add("hidden");
-      fetchArts(); // イラストタブを押した際に最新を取得
+      fetchArts();
     });
 
     document.getElementById("btn-admin-login").addEventListener("click", async () => {
@@ -160,7 +189,7 @@
       }
     });
 
-    // リポート一覧の取得
+    // リポート取得
     async function fetchReports() {
       try {
         reportListContainer.innerHTML = "データを取得中...";
@@ -179,7 +208,6 @@
           card.className = "report-card";
           
           const dateStr = data.timestamp ? data.timestamp.toDate().toLocaleString() : "時刻不明";
-          
           card.innerHTML = `
             <div class="report-meta">
               日時: ${dateStr} | 報告者: ${data.reporterName || "名無し"}<br>
@@ -191,22 +219,21 @@
         });
       } catch (error) {
         console.error("リポート取得エラー:", error);
-        reportListContainer.innerHTML = `<span style="color:red;">取得に失敗しました。</span>`;
+        reportListContainer.innerHTML = `<span style="color:red;">リポートの取得に失敗しました。</span>`;
       }
     }
 
-    // イラスト一覧の取得 (art_posts コレクション)
+    // イラスト一覧取得 (art_posts)
     async function fetchArts() {
       try {
         artListContainer.innerHTML = "イラストを取得中...";
         
-        // 日時フィールド（createdAt または timestamp）に対応
         let snap;
         try {
           const q = query(collection(db, "art_posts"), orderBy("createdAt", "desc"));
           snap = await getDocs(q);
         } catch (e) {
-          // createdAt でのソートに失敗した場合は並び替えなしで全件取得
+          // インデックス未作成等の場合は並び替えなしでフォールバック
           snap = await getDocs(collection(db, "art_posts"));
         }
 
@@ -218,24 +245,42 @@
         artListContainer.innerHTML = "";
         snap.forEach(docSnap => {
           const data = docSnap.data();
-          const card = document.createElement("div");
-          card.className = "art-card";
 
-          // 画像URLプロパティの揺れに対応 (imageUrl, url, imagePath, dataURL など)
-          const imgUrl = data.imageUrl || data.url || data.imagePath || data.dataURL || "";
-          
-          // 日時プロパティの揺れに対応
-          const timeField = data.createdAt || data.timestamp;
+          // ログで各ドキュメントの中身を確認できるように出力
+          console.log("取得したart_postデータ:", docSnap.id, data);
+
+          // 画像データを探す（Base64 / URLの各フィールド名、あるいは "data:image" で始まる文字列を自動検出）
+          let imgData = data.artData || data.canvasData || data.image || data.imageData || 
+                        data.imageUrl || data.url || data.dataUrl || data.dataURL || "";
+
+          // プロパティ名が一致しない場合、data:image または http で始まる値を自動検索
+          if (!imgData) {
+            for (const key in data) {
+              if (typeof data[key] === "string" && (data[key].startsWith("data:image") || data[key].startsWith("http"))) {
+                imgData = data[key];
+                break;
+              }
+            }
+          }
+
+          const timeField = data.createdAt || data.timestamp || data.updatedAt;
           const dateStr = timeField && typeof timeField.toDate === "function" 
             ? timeField.toDate().toLocaleString() 
             : "";
 
-          const author = data.authorName || data.userName || data.creatorName || "名無し";
+          const author = data.authorName || data.userName || data.creatorName || data.name || "名無し";
           const title = data.title || "無題";
+
+          const card = document.createElement("div");
+          card.className = "art-card";
+
+          const imgHtml = imgData
+            ? `<img src="${imgData}" alt="${title}" loading="lazy" class="clickable-art" />`
+            : `<div style="padding:20px;text-align:center;color:#999;font-size:12px;">画像データなし</div>`;
 
           card.innerHTML = `
             <div class="art-img-wrap">
-              ${imgUrl ? `<a href="${imgUrl}" target="_blank" rel="noopener noreferrer"><img src="${imgUrl}" alt="${title}" loading="lazy" /></a>` : '<div style="padding:20px;text-align:center;color:#999;">画像なし</div>'}
+              ${imgHtml}
             </div>
             <div class="art-info">
               <div class="art-title">${title}</div>
@@ -245,11 +290,21 @@
               </div>
             </div>
           `;
+
+          // 画像クリックでポップアップ拡大
+          if (imgData) {
+            const imgEl = card.querySelector(".clickable-art");
+            imgEl.addEventListener("click", () => {
+              modalImage.src = imgData;
+              imgModal.classList.remove("hidden");
+            });
+          }
+
           artListContainer.appendChild(card);
         });
       } catch (error) {
         console.error("イラスト取得エラー:", error);
-        artListContainer.innerHTML = `<span style="color:red;">イラスト一覧の取得に失敗しました。</span><br>Firestoreの権限（Rules）やインデックスを確認してください。`;
+        artListContainer.innerHTML = `<span style="color:red;">イラストの取得に失敗しました。</span><br>コンソール(F12)のエラーログを確認してください。`;
       }
     }
   </script>
