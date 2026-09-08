@@ -74,17 +74,31 @@
       margin-right: 4px;
     }
 
-    /* 削除ボタン */
-    .btn-delete {
-      background-color: #ea4335;
-      color: white;
+    /* ボタングループ */
+    .art-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      justify-content: flex-end;
+    }
+    .btn-action {
       font-size: 12px;
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-radius: 4px;
       border: none;
       cursor: pointer;
-      margin-top: 8px;
-      align-self: flex-end;
+      font-weight: normal;
+    }
+    .btn-edit {
+      background-color: #fbbc04;
+      color: #202124;
+    }
+    .btn-edit:hover {
+      background-color: #e2a700;
+    }
+    .btn-delete {
+      background-color: #ea4335;
+      color: white;
     }
     .btn-delete:hover {
       background-color: #d33426;
@@ -146,7 +160,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     
     const firebaseConfig = {
@@ -242,7 +256,7 @@
               部屋ID: ${data.activeRoomId || "-"}
             </div>
             <div style="white-space: pre-wrap;">${data.content || ""}</div>
-            <button class="btn-delete" style="float: right; margin-top: -20px;">削除</button>
+            <button class="btn-action btn-delete" style="float: right; margin-top: -20px;">削除</button>
           `;
 
           // リポート削除処理
@@ -289,7 +303,7 @@
           const docId = docSnap.id;
           const data = docSnap.data();
 
-          // 画像データの取得（data:image または http 形式）
+          // 画像データの取得
           let imgData = data.artData || data.canvasData || data.image || data.imageData || 
                         data.imageUrl || data.url || data.dataUrl || data.dataURL || "";
 
@@ -302,7 +316,7 @@
             }
           }
 
-          const answer = data.answerWord || data.word || data.theme || data.title || "（答えなし）";
+          let currentAnswer = data.answerWord || data.word || data.theme || data.title || "（答えなし）";
           const drawer = data.drawerName || data.authorName || data.userName || data.creatorName || "名無し";
 
           const timeField = data.createdAt || data.timestamp;
@@ -321,7 +335,7 @@
           card.className = "art-card";
 
           const imgHtml = imgData
-            ? `<img src="${imgData}" alt="${answer}" loading="lazy" class="clickable-art" />`
+            ? `<img src="${imgData}" alt="${currentAnswer}" loading="lazy" class="clickable-art" />`
             : `<div style="padding:20px;text-align:center;color:#999;font-size:12px;">画像データなし</div>`;
 
           card.innerHTML = `
@@ -329,14 +343,17 @@
               ${imgHtml}
             </div>
             <div class="art-info">
-              <div class="art-answer">🎨 答え: ${answer}</div>
+              <div class="art-answer">🎨 答え: <span class="answer-text">${currentAnswer}</span></div>
               <div class="art-meta-item"><span class="art-label">描いた人:</span>${drawer}</div>
               <div class="art-meta-item"><span class="art-label">作成日時:</span>${dateStr}</div>
-              <button class="btn-delete">イラストを削除</button>
+              <div class="art-actions">
+                <button class="btn-action btn-edit">✏️ 答えを編集</button>
+                <button class="btn-action btn-delete">削除</button>
+              </div>
             </div>
           `;
 
-          // 画像拡大モーダル
+          // 画像クリックで拡大モーダル
           if (imgData) {
             const imgEl = card.querySelector(".clickable-art");
             imgEl.addEventListener("click", () => {
@@ -345,10 +362,43 @@
             });
           }
 
+          // 答え編集処理
+          const editBtn = card.querySelector(".btn-edit");
+          const answerTextEl = card.querySelector(".answer-text");
+          editBtn.addEventListener("click", async () => {
+            const newAnswer = prompt("新しい答え（お題）を入力してください:", currentAnswer);
+            if (newAnswer === null) return; // キャンセル時
+            const trimmed = newAnswer.trim();
+            if (!trimmed) {
+              alert("答えを空にすることはできません。");
+              return;
+            }
+
+            editBtn.disabled = true;
+            editBtn.textContent = "更新中...";
+
+            try {
+              // Firestore のドキュメントを更新
+              await updateDoc(doc(db, "art_posts", docId), {
+                answerWord: trimmed
+              });
+              
+              currentAnswer = trimmed;
+              answerTextEl.textContent = trimmed;
+              alert("答えを更新しました！");
+            } catch (err) {
+              console.error("更新エラー:", err);
+              alert("更新に失敗しました。セキュリティルール（更新権限）を確認してください。");
+            } finally {
+              editBtn.disabled = false;
+              editBtn.textContent = "✏️ 答えを編集";
+            }
+          });
+
           // イラスト削除処理
           const delBtn = card.querySelector(".btn-delete");
           delBtn.addEventListener("click", async () => {
-            const ok = confirm(`「${answer}」のイラストを削除してもよろしいですか？`);
+            const ok = confirm(`「${currentAnswer}」のイラストを削除してもよろしいですか？`);
             if (!ok) return;
 
             delBtn.disabled = true;
@@ -356,12 +406,12 @@
 
             try {
               await deleteDoc(doc(db, "art_posts", docId));
-              card.remove(); // 画面上から即座に消去
+              card.remove();
             } catch (err) {
               console.error("削除エラー:", err);
               alert("削除に失敗しました。Firestoreのセキュリティルール（削除権限）を確認してください。");
               delBtn.disabled = false;
-              delBtn.textContent = "イラストを削除";
+              delBtn.textContent = "削除";
             }
           });
 
