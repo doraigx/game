@@ -5,7 +5,7 @@
   <title>リポート・イラスト管理ダッシュボード</title>
   <style>
     body { font-family: sans-serif; padding: 20px; background-color: #f5f7fb; margin: 0; }
-    .report-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .report-card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; }
     .report-meta { font-size: 12px; color: #666; margin-bottom: 8px; }
     #login-section { margin-bottom: 20px; text-align: center; margin-top: 50px; }
     button { padding: 10px 20px; background-color: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; }
@@ -30,6 +30,7 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
+      position: relative;
     }
     .art-img-wrap {
       width: 100%;
@@ -54,6 +55,7 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      flex-grow: 1;
     }
     .art-answer {
       font-weight: bold;
@@ -70,6 +72,22 @@
       font-weight: bold;
       color: #777;
       margin-right: 4px;
+    }
+
+    /* 削除ボタン */
+    .btn-delete {
+      background-color: #ea4335;
+      color: white;
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      margin-top: 8px;
+      align-self: flex-end;
+    }
+    .btn-delete:hover {
+      background-color: #d33426;
     }
 
     /* 画像拡大モーダル */
@@ -128,7 +146,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, orderBy, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     
     const firebaseConfig = {
@@ -212,6 +230,7 @@
 
         reportListContainer.innerHTML = "";
         snap.forEach(docSnap => {
+          const docId = docSnap.id;
           const data = docSnap.data();
           const card = document.createElement("div");
           card.className = "report-card";
@@ -223,7 +242,22 @@
               部屋ID: ${data.activeRoomId || "-"}
             </div>
             <div style="white-space: pre-wrap;">${data.content || ""}</div>
+            <button class="btn-delete" style="float: right; margin-top: -20px;">削除</button>
           `;
+
+          // リポート削除処理
+          const delBtn = card.querySelector(".btn-delete");
+          delBtn.addEventListener("click", async () => {
+            if (!confirm("このリポートを削除しますか？")) return;
+            try {
+              await deleteDoc(doc(db, "reports", docId));
+              card.remove();
+            } catch (err) {
+              console.error("削除エラー:", err);
+              alert("削除に失敗しました。権限を確認してください。");
+            }
+          });
+
           reportListContainer.appendChild(card);
         });
       } catch (error) {
@@ -242,7 +276,6 @@
           const q = query(collection(db, "art_posts"), orderBy("createdAt", "desc"));
           snap = await getDocs(q);
         } catch (e) {
-          // createdAtのインデックスが無い場合などは並び替えなしで全件取得
           snap = await getDocs(collection(db, "art_posts"));
         }
 
@@ -253,9 +286,10 @@
 
         artListContainer.innerHTML = "";
         snap.forEach(docSnap => {
+          const docId = docSnap.id;
           const data = docSnap.data();
 
-          // 画像データを探す（data:image または http 形式の文字列）
+          // 画像データの取得（data:image または http 形式）
           let imgData = data.artData || data.canvasData || data.image || data.imageData || 
                         data.imageUrl || data.url || data.dataUrl || data.dataURL || "";
 
@@ -268,13 +302,9 @@
             }
           }
 
-          // 1. お題・答え (answerWord)
           const answer = data.answerWord || data.word || data.theme || data.title || "（答えなし）";
-
-          // 2. 書いた人 (drawerName)
           const drawer = data.drawerName || data.authorName || data.userName || data.creatorName || "名無し";
 
-          // 3. 作成日時 (createdAt)
           const timeField = data.createdAt || data.timestamp;
           let dateStr = "日時不明";
           if (timeField) {
@@ -302,10 +332,11 @@
               <div class="art-answer">🎨 答え: ${answer}</div>
               <div class="art-meta-item"><span class="art-label">描いた人:</span>${drawer}</div>
               <div class="art-meta-item"><span class="art-label">作成日時:</span>${dateStr}</div>
+              <button class="btn-delete">イラストを削除</button>
             </div>
           `;
 
-          // 画像クリックで拡大モーダル表示
+          // 画像拡大モーダル
           if (imgData) {
             const imgEl = card.querySelector(".clickable-art");
             imgEl.addEventListener("click", () => {
@@ -313,6 +344,26 @@
               imgModal.classList.remove("hidden");
             });
           }
+
+          // イラスト削除処理
+          const delBtn = card.querySelector(".btn-delete");
+          delBtn.addEventListener("click", async () => {
+            const ok = confirm(`「${answer}」のイラストを削除してもよろしいですか？`);
+            if (!ok) return;
+
+            delBtn.disabled = true;
+            delBtn.textContent = "削除中...";
+
+            try {
+              await deleteDoc(doc(db, "art_posts", docId));
+              card.remove(); // 画面上から即座に消去
+            } catch (err) {
+              console.error("削除エラー:", err);
+              alert("削除に失敗しました。Firestoreのセキュリティルール（削除権限）を確認してください。");
+              delBtn.disabled = false;
+              delBtn.textContent = "イラストを削除";
+            }
+          });
 
           artListContainer.appendChild(card);
         });
